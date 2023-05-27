@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    `maven-publish`
 }
 
 android {
@@ -27,5 +28,5 @@ android {
 
 dependencies {
     api("androidx.compose.runtime:runtime:1.4.3")
-    api(project(mapOf("path" to ":preference-helper")))
+    api(project(":preference-helper"))
 }

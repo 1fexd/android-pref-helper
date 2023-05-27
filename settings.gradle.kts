@@ -14,4 +14,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "android-pref-helper"
-include(":preference-helper", ":preference-helper-compose")
+
+include("preference-helper")
+include("preference-helper-compose")
