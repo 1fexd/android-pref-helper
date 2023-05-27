@@ -39,8 +39,13 @@ fun <T> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, Boolean>,
 ) = getState(preference, ::write, ::get)
 
+private val stateCache = mutableMapOf<String, RepositoryState<*, *, *>>()
+
+@Suppress("UNCHECKED_CAST")
 private fun <T, NT, P : BasePreference<T, NT>> getState(
     preference: P,
     writer: (P, NT) -> Unit,
     reader: (P) -> NT,
-) = RepositoryState(preference, writer, reader)
+) = stateCache.getOrPut(preference.key) {
+    RepositoryState(preference, writer, reader)
+} as RepositoryState<T, NT, P>
