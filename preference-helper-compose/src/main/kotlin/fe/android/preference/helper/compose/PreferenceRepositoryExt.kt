@@ -21,7 +21,7 @@ fun <T> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, Int>,
 ) = getState(preference, ::write, ::get)
 
-fun PreferenceRepository.getIntState(preference: BasePreference.Preference<Long>) = getState(
+fun PreferenceRepository.getLongState(preference: BasePreference.Preference<Long>) = getState(
     preference, ::writeLong, ::getLong
 )
 
