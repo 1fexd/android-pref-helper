@@ -17,3 +17,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.1fexd"
+            artifactId = "android-pref-helper"
+            version = "0.0.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+}
