@@ -23,7 +23,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.1fexd"
             artifactId = "android-pref-helper"
-            version = "0.0.1"
+            version = "0.0.6"
 
             afterEvaluate {
                 from(components["release"])
