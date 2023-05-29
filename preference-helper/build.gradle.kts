@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     `maven-publish`
+    id("net.nemerosa.versioning") version "3.0.0"
 }
 
 android {
@@ -21,9 +22,8 @@ android {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "com.github.1fexd"
-            artifactId = "android-pref-helper"
-            version = "0.0.7"
+            groupId = "android-pref-helper"
+            version = versioning.info.tag ?: versioning.info.full
 
             afterEvaluate {
                 from(components["release"])
