@@ -3,9 +3,10 @@ package fe.android.preference.helper
 import android.content.Context
 import android.content.SharedPreferences
 
-class PreferenceRepository(context: Context) {
+class PreferenceRepository(context: Context, name: String = "preferences") {
+
     private val preferences by lazy {
-        context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+        context.getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
     private fun editor(
