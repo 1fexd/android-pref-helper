@@ -8,7 +8,7 @@ fun PreferenceRepository.getStringState(
 ) = getState(preference, ::writeString, ::getString)
 
 @JvmName("getMappedAsStateByString")
-fun <T> PreferenceRepository.getState(
+fun <T : Any> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, String>,
 ) = getState(preference, ::write, ::get)
 
@@ -17,7 +17,7 @@ fun PreferenceRepository.getIntState(preference: BasePreference.Preference<Int>)
 )
 
 @JvmName("getMappedAsStateByInt")
-fun <T> PreferenceRepository.getState(
+fun <T : Any> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, Int>,
 ) = getState(preference, ::write, ::get)
 
@@ -26,7 +26,7 @@ fun PreferenceRepository.getLongState(preference: BasePreference.Preference<Long
 )
 
 @JvmName("getMappedAsStateByLong")
-fun <T> PreferenceRepository.getState(
+fun <T : Any> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, Long>,
 ) = getState(preference, ::write, ::get)
 
@@ -35,14 +35,14 @@ fun PreferenceRepository.getBooleanState(preference: BasePreference.Preference<B
 )
 
 @JvmName("getMappedAsStateByBoolean")
-fun <T> PreferenceRepository.getState(
+fun <T : Any> PreferenceRepository.getState(
     preference: BasePreference.MappedPreference<T, Boolean>,
 ) = getState(preference, ::write, ::get)
 
 private val stateCache = mutableMapOf<String, RepositoryState<*, *, *>>()
 
 @Suppress("UNCHECKED_CAST")
-private fun <T, NT, P : BasePreference<T, NT>> getState(
+private fun <T : Any, NT, P : BasePreference<T, NT>> getState(
     preference: P,
     writer: (P, NT) -> Unit,
     reader: (P) -> NT,

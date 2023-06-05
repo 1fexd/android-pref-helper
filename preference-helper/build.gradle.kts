@@ -22,7 +22,7 @@ android {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "android-pref-helper"
+            groupId = "fe.android.preference.helper"
             version = versioning.info.tag ?: versioning.info.full
 
             afterEvaluate {
