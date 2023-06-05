@@ -13,6 +13,18 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
         edit: SharedPreferences.Editor.() -> Unit
     ) = preferences.edit().apply(edit).apply()
 
+    fun getAsString(preference: BasePreference<*, *>) = when (preference.clazz) {
+        String::class -> unsafeGetString(preference.key, preference.default as String?)
+        Boolean::class -> unsafeGetBoolean(
+            preference.key,
+            preference.default as Boolean?
+        ).toString()
+
+        Int::class -> unsafeGetInt(preference.key, preference.default as Int?).toString()
+        Long::class -> unsafeGetLong(preference.key, preference.default as Long?).toString()
+        else -> null
+    }
+
     /**
      * String value operations
      */
@@ -39,13 +51,13 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      * Type to string value operations
      */
     @JvmName("writeMappedToString")
-    fun <T> write(
+    fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, String>,
         newState: T
     ) = unsafeWriteString(preference.key, preference.persist(newState))
 
     @JvmName("getMappedByString")
-    fun <T> get(
+    fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, String>,
     ) = getOrDefault(preference, ::unsafeGetString)
 
@@ -65,13 +77,13 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      * Type to int value operations
      */
     @JvmName("writeMappedToInt")
-    fun <T> write(
+    fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Int>,
         newState: T
     ) = unsafeWriteInt(preference.key, preference.persist(newState))
 
     @JvmName("getMappedByInt")
-    fun <T> get(
+    fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Int>,
     ) = getOrDefault(preference, ::unsafeGetInt)
 
@@ -91,13 +103,13 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      * Type to long value operations
      */
     @JvmName("writeMappedToLong")
-    fun <T> write(
+    fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Long>,
         newState: T
     ) = unsafeWriteLong(preference.key, preference.persist(newState))
 
     @JvmName("getMappedByLong")
-    fun <T> get(
+    fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Long>,
     ) = getOrDefault(preference, ::unsafeGetLong)
 
@@ -117,13 +129,13 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      * Type to boolean value operations
      */
     @JvmName("writeMappedToBoolean")
-    fun <T> write(
+    fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Boolean>,
         newState: T
     ) = unsafeWriteBoolean(preference.key, preference.persist(newState))
 
     @JvmName("getMappedByBoolean")
-    fun <T> get(
+    fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Boolean>,
     ) = getOrDefault(preference, ::unsafeGetBoolean)
 
@@ -165,7 +177,7 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     /**
      * Utils
      */
-    private fun <T, M> getOrDefault(
+    private fun <T : Any, M> getOrDefault(
         preference: BasePreference.MappedPreference<T, M>,
         preferenceReader: KeyReader<M?>,
     ): T {

@@ -1,65 +1,73 @@
 package fe.android.preference.helper
 
-sealed class BasePreference<T, NT> private constructor(val key: String, val default: NT) {
-    class PreferenceNullable<T> private constructor(
+import kotlin.reflect.KClass
+
+sealed class BasePreference<T : Any, NT> private constructor(val key: String, val default: NT, val clazz: KClass<T>) {
+    class PreferenceNullable<T : Any> private constructor(
         key: String,
-        default: T?
-    ) : BasePreference<T, T?>(key, default) {
+        default: T?,
+        clazz: KClass<T>
+    ) : BasePreference<T, T?>(key, default, clazz) {
         companion object {
             fun stringPreference(
                 key: String,
                 default: String? = null
-            ) = PreferenceNullable(key, default)
+            ) = PreferenceNullable(key, default, String::class)
         }
     }
 
-    class Preference<T> private constructor(
+    class Preference<T : Any> private constructor(
         key: String,
-        default: T
-    ) : BasePreference<T, T>(key, default) {
+        default: T,
+        clazz: KClass<T>
+    ) : BasePreference<T, T>(key, default, clazz) {
         companion object {
             fun booleanPreference(
                 key: String,
                 default: Boolean = false
-            ) = Preference(key, default)
+            ) = Preference(key, default, Boolean::class)
 
             fun intPreference(
                 key: String,
                 default: Int = 0
-            ) = Preference(key, default)
+            ) = Preference(key, default, Int::class)
 
             fun longPreference(
                 key: String,
                 default: Long = 0L
-            ) = Preference(key, default)
+            ) = Preference(key, default, Long::class)
         }
     }
 
-    class MappedPreference<T, M> private constructor(
-        key: String, default: T, private val mapper: TypeMapper<T, M>
-    ) : BasePreference<T, T>(key, default) {
+    class MappedPreference<T : Any, M> (
+        key: String,
+        default: T,
+        private val mapper: TypeMapper<T, M>,
+        clazz: KClass<T>
+    ) : BasePreference<T, T>(key, default, clazz) {
         val defaultMapped = persist(default)
         fun read(mapped: M) = mapper.reader(mapped)
         fun persist(value: T) = mapper.persister(value)
 
         companion object {
-            fun <T, M> mappedPreference(
+            inline fun <reified T : Any, M> mappedPreference(
                 key: String,
                 default: T,
                 mapper: TypeMapper<T, M>
-            ) = MappedPreference(key, default, mapper)
+            ) = MappedPreference(key, default, mapper, T::class)
         }
     }
 
-    class InitPreference<T> private constructor(
+    class InitPreference<T : Any>(
         key: String,
-        val initial: () -> T
-    ) : BasePreference<T, T?>(key, null) {
+        val initial: () -> T,
+        clazz: KClass<T>
+    ) : BasePreference<T, T?>(key, null, clazz) {
         companion object {
-            fun <T> stringPreference(
+            inline fun <reified T : Any> stringPreference(
                 key: String,
-                initial: () -> T
-            ) = InitPreference(key, initial)
+                noinline initial: () -> T
+            ) = InitPreference(key, initial, T::class)
         }
     }
 }
