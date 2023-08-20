@@ -1,2 +1,4 @@
 jdk:
   - openjdk17
+env:
+  DISABLE_TESTING_MODULE: true

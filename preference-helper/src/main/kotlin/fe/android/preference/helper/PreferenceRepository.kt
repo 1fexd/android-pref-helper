@@ -2,16 +2,18 @@ package fe.android.preference.helper
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
 
-class PreferenceRepository(context: Context, name: String = "preferences") {
+typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
+
+class PreferenceRepository(context: Context, name: String? = "preferences") {
 
     private val preferences by lazy {
-        context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        if (name == null) PreferenceManager.getDefaultSharedPreferences(context)
+        else context.getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
-    private fun editor(
-        edit: SharedPreferences.Editor.() -> Unit
-    ) = preferences.edit().apply(edit).apply()
+    fun defaultEditor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
 
     fun getAsString(preference: BasePreference<*, *>) = when (preference.clazz) {
         String::class -> unsafeGetString(preference.key, preference.default as String?)
@@ -30,18 +32,22 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      */
     fun writeString(
         preference: BasePreference.PreferenceNullable<String>,
-        newState: String?
-    ) = unsafeWriteString(preference.key, newState)
+        newState: String?,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteString(preference.key, newState, editor)
 
     fun getString(preference: BasePreference.PreferenceNullable<String>) = unsafeGetString(
         preference.key, preference.default
     )
 
-    fun getOrWriteInit(preference: BasePreference.InitPreference<String>): String {
+    fun getOrWriteInit(
+        preference: BasePreference.InitPreference<String>,
+        editor: SharedPreferences.Editor? = null
+    ): String {
         val value = unsafeGetString(preference.key, null)
         return if (value == null) {
             val initial = preference.initial()
-            unsafeWriteString(preference.key, initial)
+            unsafeWriteString(preference.key, initial, editor)
 
             return initial
         } else value
@@ -53,8 +59,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     @JvmName("writeMappedToString")
     fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, String>,
-        newState: T
-    ) = unsafeWriteString(preference.key, preference.persist(newState))
+        newState: T,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteString(preference.key, preference.persist(newState), editor)
 
     @JvmName("getMappedByString")
     fun <T : Any> get(
@@ -66,8 +73,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      */
     fun writeInt(
         preference: BasePreference.Preference<Int>,
-        newState: Int
-    ) = unsafeWriteInt(preference.key, newState)
+        newState: Int,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteInt(preference.key, newState, editor)
 
     fun getInt(preference: BasePreference.Preference<Int>) = unsafeGetInt(
         preference.key, preference.default
@@ -79,8 +87,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     @JvmName("writeMappedToInt")
     fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Int>,
-        newState: T
-    ) = unsafeWriteInt(preference.key, preference.persist(newState))
+        newState: T,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteInt(preference.key, preference.persist(newState), editor)
 
     @JvmName("getMappedByInt")
     fun <T : Any> get(
@@ -92,8 +101,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      */
     fun writeLong(
         preference: BasePreference.Preference<Long>,
-        newState: Long
-    ) = unsafeWriteLong(preference.key, newState)
+        newState: Long,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteLong(preference.key, newState, editor)
 
     fun getLong(preference: BasePreference.Preference<Long>) = unsafeGetLong(
         preference.key, preference.default
@@ -105,8 +115,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     @JvmName("writeMappedToLong")
     fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Long>,
-        newState: T
-    ) = unsafeWriteLong(preference.key, preference.persist(newState))
+        newState: T,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteLong(preference.key, preference.persist(newState), editor)
 
     @JvmName("getMappedByLong")
     fun <T : Any> get(
@@ -118,8 +129,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
      */
     fun writeBoolean(
         preference: BasePreference.Preference<Boolean>,
-        newState: Boolean
-    ) = unsafeWriteBoolean(preference.key, newState)
+        newState: Boolean,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteBoolean(preference.key, newState, editor)
 
     fun getBoolean(preference: BasePreference.Preference<Boolean>) = unsafeGetBoolean(
         preference.key, preference.default
@@ -131,8 +143,9 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     @JvmName("writeMappedToBoolean")
     fun <T : Any> write(
         preference: BasePreference.MappedPreference<T, Boolean>,
-        newState: T
-    ) = unsafeWriteBoolean(preference.key, preference.persist(newState))
+        newState: T,
+        editor: SharedPreferences.Editor? = null
+    ) = unsafeWriteBoolean(preference.key, preference.persist(newState), editor)
 
     @JvmName("getMappedByBoolean")
     fun <T : Any> get(
@@ -142,20 +155,33 @@ class PreferenceRepository(context: Context, name: String = "preferences") {
     /**
      * Unsafe writes/reads (do not do check type of Property before writing, use with caution!)
      */
-    private fun unsafeWriteString(key: String, newState: String?) = editor {
-        putString(key, newState)
-    }
+    private fun unsafeWriteString(
+        key: String,
+        newState: String?,
+        editor: SharedPreferences.Editor?
+    ) = write(editor) { putString(key, newState) }
 
-    private fun unsafeWriteInt(key: String, newState: Int) = editor {
-        putInt(key, newState)
-    }
+    private fun unsafeWriteInt(
+        key: String,
+        newState: Int,
+        editor: SharedPreferences.Editor?
+    ) = write(editor) { putInt(key, newState) }
 
-    private fun unsafeWriteLong(key: String, newState: Long) = editor {
-        putLong(key, newState)
-    }
+    private fun unsafeWriteLong(
+        key: String,
+        newState: Long,
+        editor: SharedPreferences.Editor?
+    ) = write(editor) { putLong(key, newState) }
 
-    private fun unsafeWriteBoolean(key: String, newState: Boolean) = editor {
-        putBoolean(key, newState)
+    private fun unsafeWriteBoolean(
+        key: String,
+        newState: Boolean,
+        editor: SharedPreferences.Editor?
+    ) = write(editor) { putBoolean(key, newState) }
+
+    private fun write(editor: SharedPreferences.Editor?, action: PreferenceEditAction) {
+        if (editor != null) action(editor)
+        else defaultEditor(action)
     }
 
     private fun unsafeGetString(key: String, default: String?) = preferences.getString(

@@ -19,6 +19,7 @@ android {
     }
 }
 
+
 publishing {
     publications {
         register<MavenPublication>("release") {
