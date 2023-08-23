@@ -15,17 +15,24 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
 
     fun defaultEditor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
 
-    fun getAsString(preference: BasePreference<*, *>) = when (preference.clazz) {
-        String::class -> unsafeGetString(preference.key, preference.default as String?)
-        Boolean::class -> unsafeGetBoolean(
-            preference.key,
-            preference.default as Boolean?
-        ).toString()
+    fun getAsString(preference: BasePreference<*, *>): String? {
+        val clazz = if (preference is BasePreference.MappedPreference<*, *>) {
+            preference.mappedClazz
+        } else preference.clazz
 
-        Int::class -> unsafeGetInt(preference.key, preference.default as Int?).toString()
-        Long::class -> unsafeGetLong(preference.key, preference.default as Long?).toString()
-        else -> null
+        return when (clazz) {
+            String::class -> unsafeGetString(preference.key, preference.default as String?)
+            Boolean::class -> unsafeGetBoolean(
+                preference.key,
+                preference.default as Boolean?
+            ).toString()
+
+            Int::class -> unsafeGetInt(preference.key, preference.default as Int?).toString()
+            Long::class -> unsafeGetLong(preference.key, preference.default as Long?).toString()
+            else -> null
+        }
     }
+
 
     /**
      * String value operations
@@ -66,7 +73,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
     @JvmName("getMappedByString")
     fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, String>,
-    ) = getOrDefault(preference, ::unsafeGetString)
+    ) = getValueFromMapped(preference, ::unsafeGetString)
 
     /**
      * Int value operations
@@ -94,7 +101,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
     @JvmName("getMappedByInt")
     fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Int>,
-    ) = getOrDefault(preference, ::unsafeGetInt)
+    ) = getValueFromMapped(preference, ::unsafeGetInt)
 
     /**
      * Long value operations
@@ -122,7 +129,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
     @JvmName("getMappedByLong")
     fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Long>,
-    ) = getOrDefault(preference, ::unsafeGetLong)
+    ) = getValueFromMapped(preference, ::unsafeGetLong)
 
     /**
      * Boolean value operations
@@ -150,7 +157,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
     @JvmName("getMappedByBoolean")
     fun <T : Any> get(
         preference: BasePreference.MappedPreference<T, Boolean>,
-    ) = getOrDefault(preference, ::unsafeGetBoolean)
+    ) = getValueFromMapped(preference, ::unsafeGetBoolean)
 
     /**
      * Unsafe writes/reads (do not do check type of Property before writing, use with caution!)
@@ -203,7 +210,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
     /**
      * Utils
      */
-    private fun <T : Any, M> getOrDefault(
+    private fun <T : Any, M : Any> getValueFromMapped(
         preference: BasePreference.MappedPreference<T, M>,
         preferenceReader: KeyReader<M?>,
     ): T {

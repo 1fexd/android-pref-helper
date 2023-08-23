@@ -2,7 +2,11 @@ package fe.android.preference.helper
 
 import kotlin.reflect.KClass
 
-sealed class BasePreference<T : Any, NT> private constructor(val key: String, val default: NT, val clazz: KClass<T>) {
+sealed class BasePreference<T : Any, NT> private constructor(
+    val key: String,
+    val default: NT,
+    val clazz: KClass<T>
+) {
     class PreferenceNullable<T : Any> private constructor(
         key: String,
         default: T?,
@@ -39,22 +43,23 @@ sealed class BasePreference<T : Any, NT> private constructor(val key: String, va
         }
     }
 
-    class MappedPreference<T : Any, M> (
+    class MappedPreference<T : Any, M : Any>(
         key: String,
         default: T,
         private val mapper: TypeMapper<T, M>,
-        clazz: KClass<T>
+        clazz: KClass<T>,
+        val mappedClazz: KClass<M>,
     ) : BasePreference<T, T>(key, default, clazz) {
         val defaultMapped = persist(default)
         fun read(mapped: M) = mapper.reader(mapped)
         fun persist(value: T) = mapper.persister(value)
 
         companion object {
-            inline fun <reified T : Any, M> mappedPreference(
+            inline fun <reified T : Any, reified M : Any> mappedPreference(
                 key: String,
                 default: T,
                 mapper: TypeMapper<T, M>
-            ) = MappedPreference(key, default, mapper, T::class)
+            ) = MappedPreference(key, default, mapper, T::class, M::class)
         }
     }
 
