@@ -3,7 +3,6 @@ package fe.android.preference.helper
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import kotlin.reflect.KClass
 
 typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
 
@@ -40,7 +39,7 @@ abstract class PreferenceRepository(context: Context, name: String? = "preferenc
 //                    preference as BasePreference.MappedPreference<*, String>,
 //                    ::unsafeGetString
 //                ).toString()
-                unsafeGetString(preference.key, preference.default as String?)
+                unsafeGetString(preference.key, (if(mapped != null) preference.defaultMapped else preference.default) as String?)
             }
 
             Boolean::class -> {
@@ -48,7 +47,7 @@ abstract class PreferenceRepository(context: Context, name: String? = "preferenc
 //                    preference as BasePreference.MappedPreference<*, Boolean>,
 //                    ::unsafeGetBoolean
 //                ).toString()
-                unsafeGetBoolean(preference.key, preference.default as Boolean?).toString()
+                unsafeGetBoolean(preference.key, (if(mapped != null) preference.defaultMapped else preference.default) as Boolean?).toString()
             }
 
             Int::class -> {
@@ -56,7 +55,7 @@ abstract class PreferenceRepository(context: Context, name: String? = "preferenc
 //                    preference as BasePreference.MappedPreference<*, Int>,
 //                    ::unsafeGetInt
 //                ).toString()
-                unsafeGetInt(preference.key, preference.default as Int?).toString()
+                unsafeGetInt(preference.key, (if(mapped != null) preference.defaultMapped else preference.default) as Int?).toString()
             }
 
             Long::class -> {
@@ -64,7 +63,7 @@ abstract class PreferenceRepository(context: Context, name: String? = "preferenc
 //                    preference as BasePreference.MappedPreference<*, Long>,
 //                    ::unsafeGetLong
 //                ).toString()
-                unsafeGetLong(preference.key, preference.default as Long?).toString()
+                unsafeGetLong(preference.key, (if(mapped != null) preference.defaultMapped else preference.default) as Long?).toString()
             }
 
             else -> null
