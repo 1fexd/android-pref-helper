@@ -3,6 +3,7 @@ package fe.android.preference.helper
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import kotlin.reflect.KClass
 
 typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
 
@@ -15,20 +16,57 @@ abstract class PreferenceRepository(context: Context, name: String? = "preferenc
 
     fun editor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
 
+    fun setStringValueToPreference(
+        preference: BasePreference<*, *>,
+        value: String,
+        editor: SharedPreferences.Editor?
+    ) {
+        val mapped = preference as? BasePreference.MappedPreference<*, *>
+        return when (if (mapped != null) preference.mappedClazz else preference.clazz) {
+            String::class -> unsafeWriteString(preference.key, value, editor)
+            Boolean::class -> unsafeWriteBoolean(preference.key, value.toBooleanStrict(), editor)
+            Int::class -> unsafeWriteInt(preference.key, value.toInt(), editor)
+            Long::class -> unsafeWriteLong(preference.key, value.toLong(), editor)
+
+            else -> Unit
+        }
+    }
+
     fun getAnyAsString(preference: BasePreference<*, *>): String? {
-        val clazz = if (preference is BasePreference.MappedPreference<*, *>) {
-            preference.mappedClazz
-        } else preference.clazz
+        val mapped = preference as? BasePreference.MappedPreference<*, *>
+        return when (if (mapped != null) preference.mappedClazz else preference.clazz) {
+            String::class -> {
+//                if (mapped != null) getValueFromMapped(
+//                    preference as BasePreference.MappedPreference<*, String>,
+//                    ::unsafeGetString
+//                ).toString()
+                unsafeGetString(preference.key, preference.default as String?)
+            }
 
-        return when (clazz) {
-            String::class -> unsafeGetString(preference.key, preference.default as String?)
-            Boolean::class -> unsafeGetBoolean(
-                preference.key,
-                preference.default as Boolean?
-            ).toString()
+            Boolean::class -> {
+//                if (mapped != null) getValueFromMapped(
+//                    preference as BasePreference.MappedPreference<*, Boolean>,
+//                    ::unsafeGetBoolean
+//                ).toString()
+                unsafeGetBoolean(preference.key, preference.default as Boolean?).toString()
+            }
 
-            Int::class -> unsafeGetInt(preference.key, preference.default as Int?).toString()
-            Long::class -> unsafeGetLong(preference.key, preference.default as Long?).toString()
+            Int::class -> {
+//                if (mapped != null) getValueFromMapped(
+//                    preference as BasePreference.MappedPreference<*, Int>,
+//                    ::unsafeGetInt
+//                ).toString()
+                unsafeGetInt(preference.key, preference.default as Int?).toString()
+            }
+
+            Long::class -> {
+//                if (mapped != null) getValueFromMapped(
+//                    preference as BasePreference.MappedPreference<*, Long>,
+//                    ::unsafeGetLong
+//                ).toString()
+                unsafeGetLong(preference.key, preference.default as Long?).toString()
+            }
+
             else -> null
         }
     }
