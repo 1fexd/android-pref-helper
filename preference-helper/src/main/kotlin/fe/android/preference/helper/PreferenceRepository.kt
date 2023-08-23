@@ -6,16 +6,16 @@ import android.preference.PreferenceManager
 
 typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
 
-class PreferenceRepository(context: Context, name: String? = "preferences") {
+abstract class PreferenceRepository(context: Context, name: String? = "preferences") {
 
     private val preferences by lazy {
         if (name == null) PreferenceManager.getDefaultSharedPreferences(context)
         else context.getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
-    fun defaultEditor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
+    fun editor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
 
-    fun getAsString(preference: BasePreference<*, *>): String? {
+    fun getAnyAsString(preference: BasePreference<*, *>): String? {
         val clazz = if (preference is BasePreference.MappedPreference<*, *>) {
             preference.mappedClazz
         } else preference.clazz
@@ -188,7 +188,7 @@ class PreferenceRepository(context: Context, name: String? = "preferences") {
 
     private fun write(editor: SharedPreferences.Editor?, action: PreferenceEditAction) {
         if (editor != null) action(editor)
-        else defaultEditor(action)
+        else editor(action)
     }
 
     private fun unsafeGetString(key: String, default: String?) = preferences.getString(
