@@ -41,6 +41,10 @@ fun <T : Any> PreferenceRepository.getState(
 
 private val stateCache = mutableMapOf<String, RepositoryState<*, *, *>>()
 
+fun getCachedState(key: String): RepositoryState<*, *, *>? {
+    return stateCache[key]
+}
+
 @Suppress("UNCHECKED_CAST")
 private fun <T : Any, NT, P : BasePreference<T, NT>> getState(
     preference: P,

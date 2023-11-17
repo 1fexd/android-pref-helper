@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import fe.android.preference.helper.OptionTypeMapper
 import fe.android.preference.helper.PreferenceRepository
 import fe.android.preference.helper.Preferences
+import fe.android.preference.helper.compose.getState
 
 class MainActivity : ComponentActivity() {
 
@@ -33,7 +34,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val preferenceRepository = Test2(this)
-        Log.d("test", preferenceRepository.getAnyAsString(Test.test))
+
+        val test = preferenceRepository.getState(Test.test)
+//        test.forceRefresh()
+
+
+//        Log.d("test", preferenceRepository.getAnyAsString(Test.test))
 //        registerPreference {
 //            val key = stringPreference("value")
 //        }
