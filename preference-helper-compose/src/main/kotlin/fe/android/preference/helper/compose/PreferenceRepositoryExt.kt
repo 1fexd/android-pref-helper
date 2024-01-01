@@ -7,40 +7,64 @@ private typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, Prefer
 private typealias StateMappedPreference<T, M> = RepositoryState<T, T, MappedPreference<T, M>>
 private typealias StatePreference<T> = RepositoryState<T, T, Preference<T>>
 
-public fun PreferenceRepository.getStringState(preference: PreferenceNullable<String>): StateNullablePreference<String?, String> {
-    return getState(preference, ::writeString, ::getString)
+public fun PreferenceRepository.getStringState(
+    preference: PreferenceNullable<String>,
+    stateCache: StateCache = globalStateCache
+): StateNullablePreference<String?, String> {
+    return getState(preference, ::writeString, ::getString, stateCache)
 }
 
 @JvmName("getMappedAsStateByString")
-public fun <T : Any> PreferenceRepository.getState(preference: MappedPreference<T, String>): StateMappedPreference<T, String> {
-    return getState(preference, ::write, ::get)
+public fun <T : Any> PreferenceRepository.getState(
+    preference: MappedPreference<T, String>,
+    stateCache: StateCache = globalStateCache
+): StateMappedPreference<T, String> {
+    return getState(preference, ::write, ::get, stateCache)
 }
 
-public fun PreferenceRepository.getIntState(preference: Preference<Int>): StatePreference<Int> {
-    return getState(preference, ::writeInt, ::getInt)
+public fun PreferenceRepository.getIntState(
+    preference: Preference<Int>,
+    stateCache: StateCache = globalStateCache
+): StatePreference<Int> {
+    return getState(preference, ::writeInt, ::getInt, stateCache)
 }
 
 @JvmName("getMappedAsStateByInt")
-public fun <T : Any> PreferenceRepository.getState(preference: MappedPreference<T, Int>): StateMappedPreference<T, Int> {
-    return getState(preference, ::write, ::get)
+public fun <T : Any> PreferenceRepository.getState(
+    preference: MappedPreference<T, Int>,
+    stateCache: StateCache = globalStateCache
+): StateMappedPreference<T, Int> {
+    return getState(preference, ::write, ::get, stateCache)
 }
 
-public fun PreferenceRepository.getLongState(preference: Preference<Long>): StatePreference<Long> {
-    return getState(preference, ::writeLong, ::getLong)
+public fun PreferenceRepository.getLongState(
+    preference: Preference<Long>,
+    stateCache: StateCache = globalStateCache
+): StatePreference<Long> {
+    return getState(preference, ::writeLong, ::getLong, stateCache)
 }
 
 @JvmName("getMappedAsStateByLong")
-public fun <T : Any> PreferenceRepository.getState(preference: MappedPreference<T, Long>): StateMappedPreference<T, Long> {
-    return getState(preference, ::write, ::get)
+public fun <T : Any> PreferenceRepository.getState(
+    preference: MappedPreference<T, Long>,
+    stateCache: StateCache = globalStateCache
+): StateMappedPreference<T, Long> {
+    return getState(preference, ::write, ::get, stateCache)
 }
 
-public fun PreferenceRepository.getBooleanState(preference: Preference<Boolean>): StatePreference<Boolean> {
-    return getState(preference, ::writeBoolean, ::getBoolean)
+public fun PreferenceRepository.getBooleanState(
+    preference: Preference<Boolean>,
+    stateCache: StateCache = globalStateCache
+): StatePreference<Boolean> {
+    return getState(preference, ::writeBoolean, ::getBoolean, stateCache)
 }
 
 @JvmName("getMappedAsStateByBoolean")
-public fun <T : Any> PreferenceRepository.getState(preference: MappedPreference<T, Boolean>): StateMappedPreference<T, Boolean> {
-    return getState(preference, ::write, ::get)
+public fun <T : Any> PreferenceRepository.getState(
+    preference: MappedPreference<T, Boolean>,
+    stateCache: StateCache = globalStateCache
+): StateMappedPreference<T, Boolean> {
+    return getState(preference, ::write, ::get, stateCache)
 }
 
 private val globalStateCache = StateCache()
