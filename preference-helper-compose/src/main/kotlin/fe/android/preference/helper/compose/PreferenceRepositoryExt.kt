@@ -67,10 +67,14 @@ public fun <T : Any> PreferenceRepository.getState(
     return getState(preference, ::write, ::get, stateCache)
 }
 
-private val globalStateCache = StateCache()
+private val globalStateCache: StateCache = StateCache()
 
 public fun getGlobalCachedState(key: String): RepositoryState<*, *, *>? {
     return globalStateCache.get(key)
+}
+
+public fun closeGlobalStateCache() {
+    globalStateCache.close()
 }
 
 @Suppress("UNCHECKED_CAST")
