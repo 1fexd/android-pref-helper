@@ -19,6 +19,11 @@ android {
         jvmToolchain(Version.JVM)
     }
 
+    dependencies {
+        implementation(AndroidX.preference)
+        implementation(AndroidX.preference.ktx)
+    }
+
     publishing {
         multipleVariants {
             allVariants()

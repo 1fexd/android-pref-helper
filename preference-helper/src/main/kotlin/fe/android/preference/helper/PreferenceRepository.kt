@@ -2,15 +2,14 @@ package fe.android.preference.helper
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 
 typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
 
-abstract class PreferenceRepository(context: Context, name: String? = "preferences") {
+abstract class PreferenceRepository(context: Context) {
 
     private val preferences by lazy {
-        if (name == null) PreferenceManager.getDefaultSharedPreferences(context)
-        else context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     fun editor(editor: PreferenceEditAction) = preferences.edit().apply(editor).apply()
