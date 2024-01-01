@@ -1,5 +1,4 @@
 import de.fayard.refreshVersions.core.versionFor
-import org.gradle.api.component.Component
 
 plugins {
     id(libs.plugins.com.android.library)
@@ -39,7 +38,9 @@ android {
 }
 
 dependencies {
-    api(AndroidX.compose.runtime)
+    api("androidx.compose.runtime:runtime:1.5.0")
+
+//    api(AndroidX.compose.runtime)
     api(project(":preference-helper"))
 }
 
