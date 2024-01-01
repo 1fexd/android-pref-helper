@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "fe.android.preference.helper.testapp"
-    compileSdk = 33
+    compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
         applicationId = "fe.linksheet.testapp"
         minSdk = 24
-        targetSdk = 33
-        versionCode = 1
+        compileSdk = Version.COMPILE_SDK
+        versionCode = (System.currentTimeMillis() / 1000).toInt()
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
