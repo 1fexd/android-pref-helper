@@ -4,8 +4,13 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    plugins {
+        id("de.fayard.refreshVersions") version "0.60.3"
+    }
 }
 
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -13,6 +18,10 @@ dependencyResolutionManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+}
+
+plugins {
+    id("de.fayard.refreshVersions")
 }
 
 rootProject.name = "android-pref-helper"

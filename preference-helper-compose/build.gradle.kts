@@ -1,21 +1,22 @@
+import de.fayard.refreshVersions.core.versionFor
+
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    id(libs.plugins.com.android.library)
+    id(libs.plugins.org.jetbrains.kotlin.android)
     `maven-publish`
-    id("net.nemerosa.versioning") version "3.0.0"
+    id(libs.plugins.net.nemerosa.versioning)
 }
 
 android {
     namespace = "fe.android.preference.helper.compose"
-    compileSdk = 33
+    compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 21
+        minSdk = Version.MIN_SDK
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    kotlin {
+        jvmToolchain(Version.JVM)
     }
 
     buildFeatures {
@@ -23,12 +24,19 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
+    }
+
+    publishing {
+        multipleVariants {
+            allVariants()
+            withSourcesJar()
+        }
     }
 }
 
 dependencies {
-    api("androidx.compose.runtime:runtime:1.5.0")
+    api(AndroidX.compose.runtime)
     api(project(":preference-helper"))
 }
 

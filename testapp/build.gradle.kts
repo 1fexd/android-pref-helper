@@ -1,3 +1,5 @@
+import de.fayard.refreshVersions.core.versionFor
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -30,18 +32,17 @@ android {
         }
     }
 
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
+    kotlin {
+        jvmToolchain(Version.JVM)
     }
 
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -50,14 +51,14 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation(AndroidX.core.ktx)
+    implementation(AndroidX.lifecycle.runtime.ktx)
+    implementation(AndroidX.activity.compose)
+    implementation(platform(AndroidX.compose.bom))
+    implementation(AndroidX.compose.ui)
+    implementation(AndroidX.compose.ui.graphics)
+    implementation(AndroidX.compose.ui.toolingPreview)
+    implementation(AndroidX.compose.material3)
 
     implementation(project(":preference-helper"))
     implementation(project(":preference-helper-compose"))
