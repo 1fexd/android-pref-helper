@@ -1,30 +1,34 @@
 package fe.android.preference.helper.compose
 
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import fe.android.preference.helper.BasePreference
 import kotlin.reflect.KProperty
 
-class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
+public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
     private val preference: P,
     private val writer: (P, NT) -> Unit,
-    val reader: (P) -> NT,
+    public val reader: (P) -> NT,
 ) {
     private val mutableState = mutableStateOf(reader(preference))
-    val value by mutableState
 
-    fun forceRefresh() {
+    @Suppress("MemberVisibilityCanBePrivate")
+    public val value: NT by mutableState
+
+    public fun forceRefresh() {
         updateState(reader(preference))
     }
 
-    fun matches(toMatch: NT) = value == toMatch
+    public fun matches(toMatch: NT): Boolean = value == toMatch
 
-    fun updateState(newState: NT) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    public fun updateState(newState: NT) {
         if (mutableState.value != newState) {
             mutableState.value = newState
             writer(preference, newState)
         }
     }
 
-    operator fun <T> getValue(thisObj: Any?, property: KProperty<*>): NT = value
+    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = value
 }

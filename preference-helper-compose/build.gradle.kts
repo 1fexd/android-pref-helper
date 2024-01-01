@@ -19,6 +19,7 @@ android {
 
     kotlin {
         jvmToolchain(Version.JVM)
+        explicitApi()
     }
 
     buildFeatures {
@@ -38,7 +39,9 @@ android {
 }
 
 dependencies {
-    api(AndroidX.compose.runtime)
+    // doesn't work for some bizarre reason?
+//    api(AndroidX.compose.runtime)
+    api("androidx.compose.runtime:runtime:1.5.4")
     api(project(":preference-helper"))
 }
 

@@ -17,6 +17,7 @@ android {
 
     kotlin {
         jvmToolchain(Version.JVM)
+        explicitApi()
     }
 
     dependencies {
