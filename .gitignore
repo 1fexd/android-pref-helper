@@ -1,7 +1,7 @@
 .DS_Store
-/.gradle
+.gradle
 /.idea
-/build
+build
 /gradle/wrapper/*
 /gradlew*
 /local.properties
