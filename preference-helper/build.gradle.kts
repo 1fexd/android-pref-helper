@@ -5,8 +5,10 @@ plugins {
     id(libs.plugins.net.nemerosa.versioning)
 }
 
+val group = "fe.android.preference.helper"
+
 android {
-    namespace = "fe.android.preference.helper"
+    namespace = group
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
@@ -25,15 +27,4 @@ android {
     }
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "fe.android.preference.helper"
-            version = versioning.info.tag ?: versioning.info.full
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
+publishing.publish(project, group, versioning.info.tag ?: versioning.info.full, PublicationComponent.RELEASE)

@@ -1,4 +1,5 @@
 import de.fayard.refreshVersions.core.versionFor
+import org.gradle.api.component.Component
 
 plugins {
     id(libs.plugins.com.android.library)
@@ -7,8 +8,10 @@ plugins {
     id(libs.plugins.net.nemerosa.versioning)
 }
 
+val group = "fe.android.preference.helper.compose"
+
 android {
-    namespace = "fe.android.preference.helper.compose"
+    namespace = group
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
@@ -40,15 +43,4 @@ dependencies {
     api(project(":preference-helper"))
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "fe.android-pref-helper-compose"
-            version = versioning.info.tag ?: versioning.info.full
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
+publishing.publish(project, group, versioning.info.tag ?: versioning.info.full, PublicationComponent.RELEASE)

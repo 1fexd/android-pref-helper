@@ -30,5 +30,5 @@ include("preference-helper")
 include("preference-helper-compose")
 
 if (System.getenv("DISABLE_TESTING_MODULE")?.toBooleanStrictOrNull() != false) {
-    include(":testapp")
+    include("testapp")
 }
