@@ -12,15 +12,20 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
 ) {
     private val mutableState = mutableStateOf(reader(preference))
 
+    @Deprecated(message = "Use ()/invoke()", replaceWith = ReplaceWith("this()"), level = DeprecationLevel.WARNING)
     @Suppress("MemberVisibilityCanBePrivate")
     public val value: NT
         get() = mutableState.value
+
+    public operator fun invoke(): NT {
+        return mutableState.value
+    }
 
     public fun forceRefresh() {
         updateState(reader(preference))
     }
 
-    public fun matches(toMatch: NT): Boolean = value == toMatch
+    public fun matches(toMatch: NT): Boolean = mutableState.value == toMatch
 
     @Suppress("MemberVisibilityCanBePrivate")
     public fun updateState(newState: NT) {
@@ -30,5 +35,5 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
         }
     }
 
-    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = value
+    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = mutableState.value
 }

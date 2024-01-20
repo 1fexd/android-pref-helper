@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         val preferenceRepository = Test2(this)
 
         val test = preferenceRepository.getState(Test.test)
-//        test.forceRefresh()
+        val current = test.value
 
 
 //        Log.d("test", preferenceRepository.getAnyAsString(Test.test))
