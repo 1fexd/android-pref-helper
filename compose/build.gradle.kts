@@ -42,7 +42,7 @@ dependencies {
     // doesn't work for some bizarre reason?
 //    api(AndroidX.compose.runtime)
     api("androidx.compose.runtime:runtime:1.5.4")
-    api(project(":preference-helper"))
+    api(project(":core"))
 }
 
 publishing.publish(project, group, versioning.info.tag ?: versioning.info.full, PublicationComponent.RELEASE)

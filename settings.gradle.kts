@@ -26,9 +26,9 @@ plugins {
 
 rootProject.name = "android-pref-helper"
 
-include("preference-helper")
-include("preference-helper-compose")
+include("core")
+include("compose")
 
-if (System.getenv("DISABLE_TESTING_MODULE")?.toBooleanStrictOrNull() != false) {
+if (System.getenv("JITPACK")?.toBooleanStrictOrNull() != false) {
     include("testapp")
 }

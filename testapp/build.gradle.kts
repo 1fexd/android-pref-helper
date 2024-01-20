@@ -60,6 +60,6 @@ dependencies {
     implementation(AndroidX.compose.ui.toolingPreview)
     implementation(AndroidX.compose.material3)
 
-    implementation(project(":preference-helper"))
-    implementation(project(":preference-helper-compose"))
+    implementation(project(":core"))
+    implementation(project(":compose"))
 }
