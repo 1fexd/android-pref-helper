@@ -3,9 +3,9 @@ package fe.android.preference.helper.compose
 import fe.android.preference.helper.*
 
 
-private typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, PreferenceNullable<T>>
-private typealias StateMappedPreference<T, M> = RepositoryState<T, T, MappedPreference<T, M>>
-private typealias StatePreference<T> = RepositoryState<T, T, Preference<T>>
+public typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, PreferenceNullable<T>>
+public typealias StateMappedPreference<T, M> = RepositoryState<T, T, MappedPreference<T, M>>
+public typealias StatePreference<T> = RepositoryState<T, T, Preference<T>>
 
 public fun PreferenceRepository.getStringState(
     preference: PreferenceNullable<String>,

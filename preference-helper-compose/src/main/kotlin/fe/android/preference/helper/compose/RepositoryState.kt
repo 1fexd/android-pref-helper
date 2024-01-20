@@ -1,7 +1,6 @@
 package fe.android.preference.helper.compose
 
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import fe.android.preference.helper.BasePreference
 import kotlin.reflect.KProperty
@@ -14,7 +13,8 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
     private val mutableState = mutableStateOf(reader(preference))
 
     @Suppress("MemberVisibilityCanBePrivate")
-    public val value: NT by mutableState
+    public val value: NT
+        get() = mutableState.value
 
     public fun forceRefresh() {
         updateState(reader(preference))
