@@ -8,7 +8,7 @@ public sealed class BasePreference<T : Any, NT>(
     public val clazz: KClass<T>
 )
 
-public class PreferenceNullable<T : Any> (
+public class PreferenceNullable<T : Any>(
     key: String,
     default: T?,
     clazz: KClass<T>
