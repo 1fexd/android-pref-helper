@@ -30,7 +30,7 @@ public class MappedPreference<T : Any, M : Any>(
     public val defaultMapped: M = persist(default)
     public fun read(mapped: M): T? = mapper.reader(mapped)
     @Suppress("MemberVisibilityCanBePrivate")
-    public fun persist(value: T): M = mapper.persister(value)
+    public fun persist(value: T): M = mapper.writer(value)
 }
 
 public class InitPreference<T : Any>(

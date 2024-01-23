@@ -38,7 +38,14 @@ class MainActivity : ComponentActivity() {
 
         val preferenceRepository = Test2(this)
 
-//        val test = preferenceRepository.getBooleanState(Test.int)
+        val test = preferenceRepository.getIntState(Test.int)
+        println(test.value)
+        println(test())
+
+        test.updateState(2)
+        test(2)
+
+
 //        val current = test.value
 
 //        val cur = test()

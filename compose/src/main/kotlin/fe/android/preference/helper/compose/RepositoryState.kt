@@ -21,18 +21,23 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
         return mutableState.value
     }
 
+    public operator fun invoke(newState: NT) {
+        if (mutableState.value != newState) {
+            mutableState.value = newState
+            writer(preference, newState)
+        }
+    }
+
     public fun forceRefresh() {
         updateState(reader(preference))
     }
 
     public fun matches(toMatch: NT): Boolean = mutableState.value == toMatch
 
+    @Deprecated(message = "Use invoke(newState) instead", replaceWith = ReplaceWith("this(newState)"))
     @Suppress("MemberVisibilityCanBePrivate")
     public fun updateState(newState: NT) {
-        if (mutableState.value != newState) {
-            mutableState.value = newState
-            writer(preference, newState)
-        }
+        invoke(newState)
     }
 
     public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = mutableState.value
