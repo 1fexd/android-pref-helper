@@ -26,8 +26,7 @@ plugins {
 
 rootProject.name = "android-pref-helper"
 
-include("core")
-include("compose")
+include("core", "compose", "compose-mock")
 
 if (System.getenv("JITPACK")?.toBooleanStrictOrNull() != false) {
     include("testapp")
