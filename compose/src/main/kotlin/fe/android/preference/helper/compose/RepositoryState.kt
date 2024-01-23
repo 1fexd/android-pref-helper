@@ -12,26 +12,33 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
 ) {
     private val mutableState = mutableStateOf(reader(preference))
 
-    @Deprecated(message = "Use ()/invoke()", replaceWith = ReplaceWith("this()"), level = DeprecationLevel.WARNING)
+    @Deprecated(message = "Use ()/invoke()", replaceWith = ReplaceWith("this()"))
     @Suppress("MemberVisibilityCanBePrivate")
     public val value: NT
-        get() = mutableState.value
+        get() = this()
 
     public operator fun invoke(): NT {
         return mutableState.value
     }
 
     public operator fun invoke(newState: NT) {
+        update(newState)
+    }
+
+    private fun update(newState: NT, write: Boolean = true) {
         if (mutableState.value != newState) {
             mutableState.value = newState
-            writer(preference, newState)
+            if (write) {
+                writer(preference, newState)
+            }
         }
     }
 
     public fun forceRefresh() {
-        updateState(reader(preference))
+        update(reader(preference), write = false)
     }
 
+    @Deprecated(message = "Compare using ==", replaceWith = ReplaceWith("this() == toMatch"))
     public fun matches(toMatch: NT): Boolean = mutableState.value == toMatch
 
     @Deprecated(message = "Use invoke(newState) instead", replaceWith = ReplaceWith("this(newState)"))
@@ -40,5 +47,5 @@ public class RepositoryState<T : Any, NT, P : BasePreference<T, NT>>(
         invoke(newState)
     }
 
-    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = mutableState.value
+    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = this()
 }

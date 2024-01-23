@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
         test.updateState(2)
         test(2)
 
-
+        val hi = test() == 3
+        println(hi)
+        val x by test
 //        val current = test.value
 
 //        val cur = test()
