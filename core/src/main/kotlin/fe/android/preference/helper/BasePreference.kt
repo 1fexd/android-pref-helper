@@ -6,7 +6,20 @@ public sealed class BasePreference<T : Any, NT>(
     public val key: String,
     public val default: NT,
     public val clazz: KClass<T>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BasePreference<*, *>
+
+        return key == other.key
+    }
+
+    override fun hashCode(): Int {
+        return key.hashCode()
+    }
+}
 
 public class PreferenceNullable<T : Any>(
     key: String,
