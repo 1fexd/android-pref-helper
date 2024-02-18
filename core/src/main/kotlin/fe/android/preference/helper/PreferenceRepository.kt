@@ -71,7 +71,7 @@ public abstract class PreferenceRepository(context: Context) {
      */
     @JvmName("writeMappedToString")
     public fun <T : Any> write(preference: MappedPreference<T, String>, newState: T, editor: PrefEditor? = null) {
-        unsafeWriteString(preference.key, preference.persist(newState), editor)
+        unsafeWriteString(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByString")
@@ -95,7 +95,7 @@ public abstract class PreferenceRepository(context: Context) {
      */
     @JvmName("writeMappedToInt")
     public fun <T : Any> write(preference: MappedPreference<T, Int>, newState: T, editor: PrefEditor? = null) {
-        unsafeWriteInt(preference.key, preference.persist(newState), editor)
+        unsafeWriteInt(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByInt")
@@ -119,7 +119,7 @@ public abstract class PreferenceRepository(context: Context) {
      */
     @JvmName("writeMappedToLong")
     public fun <T : Any> write(preference: MappedPreference<T, Long>, newState: T, editor: PrefEditor? = null) {
-        unsafeWriteLong(preference.key, preference.persist(newState), editor)
+        unsafeWriteLong(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByLong")
@@ -143,7 +143,7 @@ public abstract class PreferenceRepository(context: Context) {
      */
     @JvmName("writeMappedToBoolean")
     public fun <T : Any> write(preference: MappedPreference<T, Boolean>, newState: T, editor: PrefEditor? = null) {
-        unsafeWriteBoolean(preference.key, preference.persist(newState), editor)
+        unsafeWriteBoolean(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByBoolean")

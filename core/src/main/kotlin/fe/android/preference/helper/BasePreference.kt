@@ -27,10 +27,10 @@ public class MappedPreference<T : Any, M : Any>(
     clazz: KClass<T>,
     public val mappedClazz: KClass<M>,
 ) : BasePreference<T, T>(key, default, clazz) {
-    public val defaultMapped: M = persist(default)
+    public val defaultMapped: M = write(default)
     public fun read(mapped: M): T? = mapper.reader(mapped)
     @Suppress("MemberVisibilityCanBePrivate")
-    public fun persist(value: T): M = mapper.writer(value)
+    public fun write(value: T): M = mapper.writer(value)
 }
 
 public class InitPreference<T : Any>(
