@@ -2,9 +2,16 @@ package fe.android.preference.helper.compose
 
 import fe.android.preference.helper.BasePreference
 
-public class StateCache(private val map: MutableMap<String, RepositoryState<*, *, *>> = mutableMapOf()) : AutoCloseable {
+public class StateCache(
+    private val map: MutableMap<String, RepositoryState<*, *, *>> = mutableMapOf()
+) : AutoCloseable {
+
     public fun refresh() {
         map.forEach { (_, state) -> state.forceRefresh() }
+    }
+
+    public fun dispose() {
+        close()
     }
 
     public override fun close() {

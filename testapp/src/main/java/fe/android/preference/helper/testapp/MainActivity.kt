@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
         println(test.value)
         println(test())
 
-        test.updateState(2)
+//        test.updateState(2)
         test(2)
 
         val hi = test() == 3
