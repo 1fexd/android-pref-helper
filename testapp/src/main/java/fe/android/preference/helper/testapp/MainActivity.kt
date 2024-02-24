@@ -2,14 +2,10 @@ package fe.android.preference.helper.testapp
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import fe.android.preference.helper.OptionTypeMapper
-import fe.android.preference.helper.PreferenceRepository
 import fe.android.preference.helper.Preferences
-import fe.android.preference.helper.compose.getBooleanState
-import fe.android.preference.helper.compose.getIntState
-import fe.android.preference.helper.compose.getState
+import fe.android.preference.helper.compose.ComposePreferenceRepository
 
 class MainActivity : ComponentActivity() {
 
@@ -29,7 +25,7 @@ class MainActivity : ComponentActivity() {
         val int = intPreference("testint")
     }
 
-    class Test2(context: Context) : PreferenceRepository(context) {
+    class Test2(context: Context) : ComposePreferenceRepository(context) {
 
     }
 
