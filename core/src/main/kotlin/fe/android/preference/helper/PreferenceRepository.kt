@@ -2,15 +2,15 @@ package fe.android.preference.helper
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
+import kotlin.reflect.KClass
 
 public typealias PreferenceEditAction = SharedPreferences.Editor.() -> Unit
-private typealias PrefEditor = SharedPreferences.Editor
+private typealias PreferenceEditor = SharedPreferences.Editor
 
-public abstract class PreferenceRepository(context: Context) {
+public abstract class PreferenceRepository(context: Context, fileName: String = "preferences") {
 
     private val preferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(context)
+        context.getSharedPreferences(context.packageName + "_$fileName", Context.MODE_PRIVATE)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -18,28 +18,24 @@ public abstract class PreferenceRepository(context: Context) {
         preferences.edit().apply(editor).apply()
     }
 
-    public fun setStringValueToPreference(preference: BasePreference<*, *>, value: String, editor: PrefEditor?) {
-        val mapped = preference as? MappedPreference<*, *>
-        return when (if (mapped != null) preference.mappedClazz else preference.clazz) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun setStringValueToPreference(preference: Preference<*, *>, value: String, editor: PreferenceEditor?) {
+        return when (preference.type) {
             String::class -> unsafeWriteString(preference.key, value, editor)
             Boolean::class -> unsafeWriteBoolean(preference.key, value.toBooleanStrict(), editor)
             Int::class -> unsafeWriteInt(preference.key, value.toInt(), editor)
             Long::class -> unsafeWriteLong(preference.key, value.toLong(), editor)
-
             else -> Unit
         }
     }
 
-    public fun getAnyAsString(preference: BasePreference<*, *>): String? {
-        val mapped = preference as? MappedPreference<*, *>
-        val default = (if (mapped != null) preference.defaultMapped else preference.default)
-        val clazz = if (mapped != null) preference.mappedClazz else preference.clazz
-
-        return when (clazz) {
-            String::class -> unsafeGetString(preference.key, default as String?)
-            Boolean::class -> unsafeGetBoolean(preference.key, default as Boolean?).toString()
-            Int::class -> unsafeGetInt(preference.key, default as Int?).toString()
-            Long::class -> unsafeGetLong(preference.key, default as Long?).toString()
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getAnyAsString(preference: Preference<*, *>): String? {
+        return when (preference.type) {
+            String::class -> unsafeGetString(preference.key, preference.def as String?)
+            Boolean::class -> unsafeGetBoolean(preference.key, preference.def as Boolean?).toString()
+            Int::class -> unsafeGetInt(preference.key, preference.def as Int?).toString()
+            Long::class -> unsafeGetLong(preference.key, preference.def as Long?).toString()
             else -> null
         }
     }
@@ -48,15 +44,22 @@ public abstract class PreferenceRepository(context: Context) {
     /**
      * String value operations
      */
-    public fun writeString(preference: PreferenceNullable<String>, newState: String?, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun writeString(
+        preference: Preference.Nullable<String>,
+        newState: String?,
+        editor: PreferenceEditor? = null
+    ) {
         unsafeWriteString(preference.key, newState, editor)
     }
 
-    public fun getString(preference: PreferenceNullable<String>): String? {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getString(preference: Preference.Nullable<String>): String? {
         return unsafeGetString(preference.key, preference.default)
     }
 
-    public fun getOrWriteInit(preference: InitPreference<String>, editor: PrefEditor? = null): String {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getOrWriteInit(preference: Preference.Init<String>, editor: PreferenceEditor? = null): String {
         val value = unsafeGetString(preference.key, null)
         return if (value == null) {
             val initial = preference.initial()
@@ -70,23 +73,31 @@ public abstract class PreferenceRepository(context: Context) {
      * Type to string value operations
      */
     @JvmName("writeMappedToString")
-    public fun <T : Any> write(preference: MappedPreference<T, String>, newState: T, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> write(
+        preference: Preference.Mapped<T, String>,
+        newState: T,
+        editor: PreferenceEditor? = null
+    ) {
         unsafeWriteString(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByString")
-    public fun <T : Any> get(preference: MappedPreference<T, String>): T {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> get(preference: Preference.Mapped<T, String>): T {
         return getValueFromMapped(preference, ::unsafeGetString)
     }
 
     /**
      * Int value operations
      */
-    public fun writeInt(preference: Preference<Int>, newState: Int, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun writeInt(preference: Preference.Default<Int>, newState: Int, editor: PreferenceEditor? = null) {
         unsafeWriteInt(preference.key, newState, editor)
     }
 
-    public fun getInt(preference: Preference<Int>): Int {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getInt(preference: Preference.Default<Int>): Int {
         return unsafeGetInt(preference.key, preference.default)
     }
 
@@ -94,23 +105,27 @@ public abstract class PreferenceRepository(context: Context) {
      * Type to int value operations
      */
     @JvmName("writeMappedToInt")
-    public fun <T : Any> write(preference: MappedPreference<T, Int>, newState: T, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> write(preference: Preference.Mapped<T, Int>, newState: T, editor: PreferenceEditor? = null) {
         unsafeWriteInt(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByInt")
-    public fun <T : Any> get(preference: MappedPreference<T, Int>): T {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> get(preference: Preference.Mapped<T, Int>): T {
         return getValueFromMapped(preference, ::unsafeGetInt)
     }
 
     /**
      * Long value operations
      */
-    public fun writeLong(preference: Preference<Long>, newState: Long, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun writeLong(preference: Preference.Default<Long>, newState: Long, editor: PreferenceEditor? = null) {
         unsafeWriteLong(preference.key, newState, editor)
     }
 
-    public fun getLong(preference: Preference<Long>): Long {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getLong(preference: Preference.Default<Long>): Long {
         return unsafeGetLong(preference.key, preference.default)
     }
 
@@ -118,23 +133,31 @@ public abstract class PreferenceRepository(context: Context) {
      * Type to long value operations
      */
     @JvmName("writeMappedToLong")
-    public fun <T : Any> write(preference: MappedPreference<T, Long>, newState: T, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> write(preference: Preference.Mapped<T, Long>, newState: T, editor: PreferenceEditor? = null) {
         unsafeWriteLong(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByLong")
-    public fun <T : Any> get(preference: MappedPreference<T, Long>): T {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> get(preference: Preference.Mapped<T, Long>): T {
         return getValueFromMapped(preference, ::unsafeGetLong)
     }
 
     /**
      * Boolean value operations
      */
-    public fun writeBoolean(preference: Preference<Boolean>, newState: Boolean, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun writeBoolean(
+        preference: Preference.Default<Boolean>,
+        newState: Boolean,
+        editor: PreferenceEditor? = null
+    ) {
         unsafeWriteBoolean(preference.key, newState, editor)
     }
 
-    public fun getBoolean(preference: Preference<Boolean>): Boolean {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun getBoolean(preference: Preference.Default<Boolean>): Boolean {
         return unsafeGetBoolean(preference.key, preference.default)
     }
 
@@ -142,52 +165,66 @@ public abstract class PreferenceRepository(context: Context) {
      * Type to boolean value operations
      */
     @JvmName("writeMappedToBoolean")
-    public fun <T : Any> write(preference: MappedPreference<T, Boolean>, newState: T, editor: PrefEditor? = null) {
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> write(
+        preference: Preference.Mapped<T, Boolean>,
+        newState: T,
+        editor: PreferenceEditor? = null
+    ) {
         unsafeWriteBoolean(preference.key, preference.write(newState), editor)
     }
 
     @JvmName("getMappedByBoolean")
-    public fun <T : Any> get(preference: MappedPreference<T, Boolean>): T {
-        return getValueFromMapped(preference, ::unsafeGetBoolean)
+    @OptIn(UnsafePreferenceInteraction::class)
+    public fun <T : Any> get(preference: Preference.Mapped<T, Boolean>): T {
+        return getValueFromMapped(preference,  ::unsafeGetBoolean)
     }
 
     /**
      * Unsafe writes/reads (do not do check type of Property before writing, use with caution!)
      */
-    private fun unsafeWriteString(key: String, newState: String?, editor: PrefEditor?) {
+    @UnsafePreferenceInteraction
+    private fun unsafeWriteString(key: String, newState: String?, editor: PreferenceEditor?) {
         return write(editor) { putString(key, newState) }
     }
 
-    private fun unsafeWriteInt(key: String, newState: Int, editor: PrefEditor?) {
+    @UnsafePreferenceInteraction
+    private fun unsafeWriteInt(key: String, newState: Int, editor: PreferenceEditor?) {
         return write(editor) { putInt(key, newState) }
     }
 
-    private fun unsafeWriteLong(key: String, newState: Long, editor: PrefEditor?) {
+    @UnsafePreferenceInteraction
+    private fun unsafeWriteLong(key: String, newState: Long, editor: PreferenceEditor?) {
         return write(editor) { putLong(key, newState) }
     }
 
-    private fun unsafeWriteBoolean(key: String, newState: Boolean, editor: PrefEditor?) {
+    @UnsafePreferenceInteraction
+    private fun unsafeWriteBoolean(key: String, newState: Boolean, editor: PreferenceEditor?) {
         return write(editor) { putBoolean(key, newState) }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    public fun write(editor: PrefEditor?, action: PreferenceEditAction) {
+    public fun write(editor: PreferenceEditor?, action: PreferenceEditAction) {
         if (editor != null) action(editor)
         else editor(action)
     }
 
+    @UnsafePreferenceInteraction
     private fun unsafeGetString(key: String, default: String?): String? {
         return preferences.getString(key, default)
     }
 
+    @UnsafePreferenceInteraction
     private fun unsafeGetInt(key: String, default: Int?): Int {
         return preferences.getInt(key, default!!)
     }
 
+    @UnsafePreferenceInteraction
     private fun unsafeGetLong(key: String, default: Long?): Long {
         return preferences.getLong(key, default!!)
     }
 
+    @UnsafePreferenceInteraction
     private fun unsafeGetBoolean(key: String, default: Boolean?): Boolean {
         return preferences.getBoolean(key, default!!)
     }
@@ -195,7 +232,7 @@ public abstract class PreferenceRepository(context: Context) {
     /**
      * Utils
      */
-    private fun <T : Any, M : Any> getValueFromMapped(preference: MappedPreference<T, M>, reader: KeyReader<M?>, ): T {
+    private fun <T : Any, M : Any> getValueFromMapped(preference: Preference.Mapped<T, M>, reader: KeyReader<M?>): T {
         val mappedValue = reader(preference.key, preference.defaultMapped)!!
         return preference.read(mappedValue) ?: preference.default
     }

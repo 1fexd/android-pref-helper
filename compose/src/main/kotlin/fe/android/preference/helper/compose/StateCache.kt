@@ -1,6 +1,6 @@
 package fe.android.preference.helper.compose
 
-import fe.android.preference.helper.BasePreference
+import fe.android.preference.helper.Preference
 
 public class StateCache(
     private val map: MutableMap<String, RepositoryState<*, *, *>> = mutableMapOf()
@@ -18,7 +18,7 @@ public class StateCache(
         map.clear()
     }
 
-    public fun <T : Any, NT, P : BasePreference<T, NT>> getOrPut(
+    public fun <T : Any, NT, P : Preference<T, NT>> getOrPut(
         preference: P,
         writer: (P, NT) -> Unit,
         reader: (P) -> NT

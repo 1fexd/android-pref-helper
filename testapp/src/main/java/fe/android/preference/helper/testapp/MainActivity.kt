@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
 //        test.updateState(2)
         test(2)
 
+        preferenceRepository.getAnyAsString(Test.int)
+
         val hi = test() == 3
         println(hi)
         val x by test

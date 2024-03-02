@@ -4,55 +4,53 @@ import android.content.Context
 import fe.android.preference.helper.*
 
 
-public typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, PreferenceNullable<T>>
-public typealias StateMappedPreference<T, M> = RepositoryState<T, T, MappedPreference<T, M>>
-public typealias StatePreference<T> = RepositoryState<T, T, Preference<T>>
+public typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, Preference.Nullable<T>>
+public typealias StateMappedPreference<T, M> = RepositoryState<T, T, Preference.Mapped<T, M>>
+public typealias StatePreference<T> = RepositoryState<T, T, Preference.Default<T>>
 
 public abstract class ComposePreferenceRepository(
     context: Context,
     @Suppress("MemberVisibilityCanBePrivate") public val stateCache: StateCache = StateCache()
 ) : PreferenceRepository(context) {
 
-    public fun getStringState(preference: PreferenceNullable<String>): StateNullablePreference<String?, String> {
+    public fun getStringState(preference: Preference.Nullable<String>): StateNullablePreference<String?, String> {
         return getState(preference, ::writeString, ::getString)
     }
 
     @JvmName("getMappedAsStateByString")
-    public fun <T : Any> getState(preference: MappedPreference<T, String>): StateMappedPreference<T, String> {
+    public fun <T : Any> getState(preference: Preference.Mapped<T, String>): StateMappedPreference<T, String> {
         return getState(preference, ::write, ::get)
     }
 
-    public fun getIntState(preference: Preference<Int>): StatePreference<Int> {
+    public fun getIntState(preference: Preference.Default<Int>): StatePreference<Int> {
         return getState(preference, ::writeInt, ::getInt)
     }
 
     @JvmName("getMappedAsStateByInt")
-    public fun <T : Any> getState(preference: MappedPreference<T, Int>): StateMappedPreference<T, Int> {
+    public fun <T : Any> getState(preference: Preference.Mapped<T, Int>): StateMappedPreference<T, Int> {
         return getState(preference, ::write, ::get)
     }
 
-    public fun getLongState(
-        preference: Preference<Long>,
-    ): StatePreference<Long> {
+    public fun getLongState(preference: Preference.Default<Long>): StatePreference<Long> {
         return getState(preference, ::writeLong, ::getLong)
     }
 
     @JvmName("getMappedAsStateByLong")
-    public fun <T : Any> getState(preference: MappedPreference<T, Long>): StateMappedPreference<T, Long> {
+    public fun <T : Any> getState(preference: Preference.Mapped<T, Long>): StateMappedPreference<T, Long> {
         return getState(preference, ::write, ::get)
     }
 
-    public fun getBooleanState(preference: Preference<Boolean>): StatePreference<Boolean> {
+    public fun getBooleanState(preference: Preference.Default<Boolean>): StatePreference<Boolean> {
         return getState(preference, ::writeBoolean, ::getBoolean)
     }
 
     @JvmName("getMappedAsStateByBoolean")
-    public fun <T : Any> getState(preference: MappedPreference<T, Boolean>): StateMappedPreference<T, Boolean> {
+    public fun <T : Any> getState(preference: Preference.Mapped<T, Boolean>): StateMappedPreference<T, Boolean> {
         return getState(preference, ::write, ::get)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any, NT, P : BasePreference<T, NT>> getState(
+    private fun <T : Any, NT, P : Preference<T, NT>> getState(
         preference: P,
         writer: Writer<P, NT>,
         reader: Reader<P, NT>,

@@ -1,9 +1,11 @@
 package fe.android.preference.helper
 
-public abstract class Preferences {
-    private val registeredPreferences = mutableMapOf<String, BasePreference<*, *>>()
+public abstract class Preferences(
+    private val blacklistedKeys: MutableSet<String> = mutableSetOf()
+) {
+    private val registeredPreferences = mutableMapOf<String, Preference<*, *>>()
 
-    public val all: Map<String, BasePreference<*, *>>
+    public val all: Map<String, Preference<*, *>>
         get() = registeredPreferences
 
     public fun getAsKeyValuePairList(repository: PreferenceRepository): List<String> {
@@ -12,38 +14,48 @@ public abstract class Preferences {
         }
     }
 
-    public fun <T : BasePreference<*, *>> add(preference: T): T {
-        if (registeredPreferences[preference.key] != null) error("This key has already been used")
-        registeredPreferences[preference.key] = preference
+    public fun addToBlacklist(vararg keys: String) {
+        blacklistedKeys.addAll(keys)
+    }
 
+    public fun <T : Preference<*, *>> add(preference: T): T {
+        if (preference.key in blacklistedKeys) {
+            throw Exception("The key '${preference.key}' is blacklisted and must not be used!")
+        }
+
+        if (registeredPreferences.containsKey(preference.key)) {
+            throw Exception("The key '${preference.key}' is already in use for a preference!")
+        }
+
+        registeredPreferences[preference.key] = preference
         return preference
     }
 
-    public fun booleanPreference(key: String, default: Boolean = false): Preference<Boolean> {
-        return add(Preference(key, default, Boolean::class))
+    public fun booleanPreference(key: String, default: Boolean = false): Preference.Default<Boolean> {
+        return add(Preference.Default(key, default, Boolean::class))
     }
 
-    public fun stringPreference(key: String, default: String? = null): PreferenceNullable<String> {
-        return add(PreferenceNullable(key, default, String::class))
+    public fun stringPreference(key: String, default: String? = null): Preference.Nullable<String> {
+        return add(Preference.Nullable(key, default, String::class))
     }
 
-    public fun intPreference(key: String, default: Int = 0): Preference<Int> {
-        return add(Preference(key, default, Int::class))
+    public fun intPreference(key: String, default: Int = 0): Preference.Default<Int> {
+        return add(Preference.Default(key, default, Int::class))
     }
 
-    public fun longPreference(key: String, default: Long = 0L): Preference<Long> {
-        return add(Preference(key, default, Long::class))
+    public fun longPreference(key: String, default: Long = 0L): Preference.Default<Long> {
+        return add(Preference.Default(key, default, Long::class))
     }
 
     public inline fun <reified T : Any, reified M : Any> mappedPreference(
         key: String,
         default: T,
         mapper: TypeMapper<T, M>
-    ): MappedPreference<T, M> {
-        return add(MappedPreference(key, default, mapper, T::class, M::class))
+    ): Preference.Mapped<T, M> {
+        return add(Preference.Mapped(key, default, mapper, T::class, M::class))
     }
 
-    public inline fun <reified T : Any> stringPreference(key: String, noinline initial: () -> T): InitPreference<T> {
-        return add(InitPreference(key, initial, T::class))
+    public inline fun <reified T : Any> stringPreference(key: String, noinline initial: () -> T): Preference.Init<T> {
+        return add(Preference.Init(key, initial, T::class))
     }
 }
