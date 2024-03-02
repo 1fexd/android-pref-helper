@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import fe.android.preference.helper.Preference
 import kotlin.reflect.KProperty
 
-public class RepositoryState<T : Any, NT, P : Preference<T, NT>>(
+public class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     private val preference: P,
     private val writer: (P, NT) -> Unit,
     public val reader: (P) -> NT,

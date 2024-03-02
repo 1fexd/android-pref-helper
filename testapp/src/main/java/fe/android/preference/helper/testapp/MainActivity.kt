@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import fe.android.preference.helper.OptionTypeMapper
-import fe.android.preference.helper.Preferences
+import fe.android.preference.helper.PreferenceDefinition
 import fe.android.preference.helper.compose.ComposePreferenceRepository
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    object Test : Preferences() {
+    object Test : PreferenceDefinition() {
         val test = mappedPreference("key", BrowserMode.SelectedBrowser, BrowserMode.Companion)
         val int = intPreference("testint")
     }
@@ -41,11 +41,21 @@ class MainActivity : ComponentActivity() {
 //        test.updateState(2)
         test(2)
 
+
         preferenceRepository.getAnyAsString(Test.int)
 
         val hi = test() == 3
         println(hi)
-        val x by test
+//        val x by test
+
+        val pref = Test.int
+
+
+//        val test123 = preferenceRepository.get(Test.int)
+
+//        val x = test
+
+//        Preference.PB()
 //        val current = test.value
 
 //        val cur = test()

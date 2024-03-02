@@ -1,6 +1,6 @@
 package fe.android.preference.helper
 
-public abstract class Preferences(
+public abstract class PreferenceDefinition(
     private val blacklistedKeys: MutableSet<String> = mutableSetOf()
 ) {
     private val registeredPreferences = mutableMapOf<String, Preference<*, *>>()
@@ -31,20 +31,20 @@ public abstract class Preferences(
         return preference
     }
 
-    public fun booleanPreference(key: String, default: Boolean = false): Preference.Default<Boolean> {
-        return add(Preference.Default(key, default, Boolean::class))
+    public fun booleanPreference(key: String, default: Boolean = false): Preference.Boolean {
+        return add(Preference.Boolean(key, default))
     }
 
     public fun stringPreference(key: String, default: String? = null): Preference.Nullable<String> {
         return add(Preference.Nullable(key, default, String::class))
     }
 
-    public fun intPreference(key: String, default: Int = 0): Preference.Default<Int> {
-        return add(Preference.Default(key, default, Int::class))
+    public fun intPreference(key: String, default: Int = 0): Preference.Int {
+        return add(Preference.Int(key, default))
     }
 
-    public fun longPreference(key: String, default: Long = 0L): Preference.Default<Long> {
-        return add(Preference.Default(key, default, Long::class))
+    public fun longPreference(key: String, default: Long = 0L): Preference.Long {
+        return add(Preference.Long(key, default))
     }
 
     public inline fun <reified T : Any, reified M : Any> mappedPreference(
@@ -55,7 +55,7 @@ public abstract class Preferences(
         return add(Preference.Mapped(key, default, mapper, T::class, M::class))
     }
 
-    public inline fun <reified T : Any> stringPreference(key: String, noinline initial: () -> T): Preference.Init<T> {
-        return add(Preference.Init(key, initial, T::class))
+    public fun stringPreference(key: String, initial: () -> String): Preference.Init<String> {
+        return add(Preference.Init(key, initial, String::class))
     }
 }

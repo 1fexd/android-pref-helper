@@ -3,7 +3,7 @@ package fe.android.preference.helper.compose
 import fe.android.preference.helper.Preference
 
 public class StateCache(
-    private val map: MutableMap<String, RepositoryState<*, *, *>> = mutableMapOf()
+    private val map: MutableMap<String, MutablePreferenceState<*, *, *>> = mutableMapOf()
 ) : AutoCloseable {
 
     public fun refresh() {
@@ -22,15 +22,15 @@ public class StateCache(
         preference: P,
         writer: (P, NT) -> Unit,
         reader: (P) -> NT
-    ): RepositoryState<*, *, *> {
-        return map.getOrPut(preference.key) { RepositoryState(preference, writer, reader) }
+    ): MutablePreferenceState<*, *, *> {
+        return map.getOrPut(preference.key) { MutablePreferenceState(preference, writer, reader) }
     }
 
-    public fun get(key: String): RepositoryState<*, *, *>? {
+    public fun get(key: String): MutablePreferenceState<*, *, *>? {
         return map[key]
     }
 
-    public fun getAll(): MutableMap<String, RepositoryState<*, *, *>> {
+    public fun getAll(): MutableMap<String, MutablePreferenceState<*, *, *>> {
         return map
     }
 }

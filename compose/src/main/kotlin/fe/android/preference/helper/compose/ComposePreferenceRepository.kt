@@ -4,9 +4,9 @@ import android.content.Context
 import fe.android.preference.helper.*
 
 
-public typealias StateNullablePreference<NT, T> = RepositoryState<T, NT, Preference.Nullable<T>>
-public typealias StateMappedPreference<T, M> = RepositoryState<T, T, Preference.Mapped<T, M>>
-public typealias StatePreference<T> = RepositoryState<T, T, Preference.Default<T>>
+public typealias StateNullablePreference<NT, T> = MutablePreferenceState<T, NT, Preference.Nullable<T>>
+public typealias StateMappedPreference<T, M> = MutablePreferenceState<T, T, Preference.Mapped<T, M>>
+public typealias StatePreference<T> = MutablePreferenceState<T, T, Preference.Default<T>>
 
 public abstract class ComposePreferenceRepository(
     context: Context,
@@ -54,8 +54,8 @@ public abstract class ComposePreferenceRepository(
         preference: P,
         writer: Writer<P, NT>,
         reader: Reader<P, NT>,
-    ): RepositoryState<T, NT, P> {
-        return stateCache.getOrPut(preference, writer, reader) as RepositoryState<T, NT, P>
+    ): MutablePreferenceState<T, NT, P> {
+        return stateCache.getOrPut(preference, writer, reader) as MutablePreferenceState<T, NT, P>
     }
 }
 
