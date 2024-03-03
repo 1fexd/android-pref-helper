@@ -1,8 +1,7 @@
 package fe.android.preference.helper
 
-public abstract class PreferenceDefinition(
-    private val blacklistedKeys: MutableSet<String> = mutableSetOf()
-) {
+public abstract class PreferenceDefinition(vararg blacklistedKeys: String) {
+    private val blacklistedKeys = mutableSetOf(*blacklistedKeys)
     private val registeredPreferences = mutableMapOf<String, Preference<*, *>>()
 
     public val all: Map<String, Preference<*, *>>
