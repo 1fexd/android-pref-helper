@@ -20,10 +20,10 @@ public class StateCache(
 
     public fun <T : Any, NT, P : Preference<T, NT>> getOrPut(
         preference: P,
-        writer: (P, NT) -> Unit,
-        reader: (P) -> NT
+        put: (P, NT) -> Unit,
+        get: (P) -> NT
     ): MutablePreferenceState<*, *, *> {
-        return map.getOrPut(preference.key) { MutablePreferenceState(preference, writer, reader) }
+        return map.getOrPut(preference.key) { MutablePreferenceState(preference, put, get) }
     }
 
     public fun get(key: String): MutablePreferenceState<*, *, *>? {

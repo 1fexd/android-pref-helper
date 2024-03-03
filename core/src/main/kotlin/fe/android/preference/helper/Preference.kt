@@ -44,14 +44,14 @@ public sealed class Preference<T : Any, NT> protected constructor(
         key: String, default: T, private val mapper: TypeMapper<T, M>,
         clazz: KClass<T>, public val mappedClazz: KClass<M>,
     ) : Preference<T, T>(key, default, clazz) {
-        public val defaultMapped: M = write(default)
+        public val defaultMapped: M = map(default)
 
         override val def: M = defaultMapped
 
-        public fun read(mapped: M): T? = mapper.reader(mapped)
+        public fun unmap(mapped: M): T? = mapper.unmap(mapped)
 
         @Suppress("MemberVisibilityCanBePrivate")
-        public fun write(value: T): M = mapper.writer(value)
+        public fun map(value: T): M = mapper.map(value)
     }
 
     public class Init<T : Any> constructor(

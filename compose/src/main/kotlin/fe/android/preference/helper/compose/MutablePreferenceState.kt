@@ -7,10 +7,10 @@ import kotlin.reflect.KProperty
 
 public class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     private val preference: P,
-    private val writer: (P, NT) -> Unit,
-    public val reader: (P) -> NT,
+    private val put: (P, NT) -> Unit,
+    public val get: (P) -> NT,
 ) {
-    private val mutableState = mutableStateOf(reader(preference))
+    private val mutableState = mutableStateOf(get(preference))
     public val value: NT
         get() = this()
 
@@ -26,13 +26,13 @@ public class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
         if (mutableState.value != newState) {
             mutableState.value = newState
             if (write) {
-                writer(preference, newState)
+                put(preference, newState)
             }
         }
     }
 
     public fun forceRefresh() {
-        update(reader(preference), write = false)
+        update(get(preference), write = false)
     }
 
     public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = this()

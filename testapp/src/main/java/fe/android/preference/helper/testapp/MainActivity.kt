@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import fe.android.preference.helper.OptionTypeMapper
 import fe.android.preference.helper.PreferenceDefinition
-import fe.android.preference.helper.compose.ComposePreferenceRepository
+import fe.android.preference.helper.compose.StatePreferenceRepository
 
 class MainActivity : ComponentActivity() {
 
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         val int = intPreference("testint")
     }
 
-    class Test2(context: Context) : ComposePreferenceRepository(context) {
+    class Test2(context: Context) : StatePreferenceRepository(context) {
 
     }
 
@@ -34,15 +34,27 @@ class MainActivity : ComponentActivity() {
 
         val preferenceRepository = Test2(this)
 
-        val test = preferenceRepository.getIntState(Test.int)
+        val test = preferenceRepository.asState(Test.int)
         println(test.value)
         println(test())
 
 //        test.updateState(2)
         test(2)
 
+//        preferenceRepository.edit {
+//
+//        }
+
+//        preferenceRepository.editor { pref ->
+//
+////            pref.writeInt(Test.int, 1, this)
+//        }
 
         preferenceRepository.getAnyAsString(Test.int)
+
+        preferenceRepository.edit {
+            put(Test.int, 10)
+        }
 
         val hi = test() == 3
         println(hi)
