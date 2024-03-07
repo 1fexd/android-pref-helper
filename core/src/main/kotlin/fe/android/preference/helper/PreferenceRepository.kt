@@ -72,7 +72,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     @JvmName("getMappedByString")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun <T : Any> get(preference: Preference.Mapped<T, String>): T {
-        return getValueFromMapped(preference, ::unsafeGetString)
+        return getValueFromMappedNullable(preference, ::unsafeGetString)
     }
 
     @OptIn(UnsafePreferenceInteraction::class)
@@ -110,22 +110,22 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
 
     @UnsafePreferenceInteraction
     private fun unsafeGetString(key: String, default: String?): String? {
-        return tryUnsafeGet(preferences, default!!) { pref, def -> pref.getString(key, def) }
+        return tryUnsafeGet(preferences, default) { pref, def -> pref.getString(key, def) }
     }
 
     @UnsafePreferenceInteraction
-    private fun unsafeGetInt(key: String, default: Int?): Int {
-        return tryUnsafeGet(preferences, default!!) { pref, def -> pref.getInt(key, def) }!!
+    private fun unsafeGetInt(key: String, default: Int): Int {
+        return tryUnsafeGet(preferences, default) { pref, def -> pref.getInt(key, def) }!!
     }
 
     @UnsafePreferenceInteraction
-    private fun unsafeGetLong(key: String, default: Long?): Long {
-        return tryUnsafeGet(preferences, default!!) { pref, def -> pref.getLong(key, def) }!!
+    private fun unsafeGetLong(key: String, default: Long): Long {
+        return tryUnsafeGet(preferences, default) { pref, def -> pref.getLong(key, def) }!!
     }
 
     @UnsafePreferenceInteraction
-    private fun unsafeGetBoolean(key: String, default: Boolean?): Boolean {
-        return tryUnsafeGet(preferences, default!!) { pref, def -> pref.getBoolean(key, def) }!!
+    private fun unsafeGetBoolean(key: String, default: Boolean): Boolean {
+        return tryUnsafeGet(preferences, default) { pref, def -> pref.getBoolean(key, def) }!!
     }
 
     private inline fun <T : Any?> tryUnsafeGet(
@@ -139,7 +139,13 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     /**
      * Utils
      */
-    private fun <T : Any, M : Any> getValueFromMapped(preference: Preference.Mapped<T, M>, reader: KeyReader<M?>): T {
+    private fun <T : Any, M : Any> getValueFromMapped(preference: Preference.Mapped<T, M>, reader: KeyReader<M>): T {
+        val mappedValue = reader(preference.key, preference.defaultMapped)
+        return preference.unmap(mappedValue) ?: preference.default
+    }
+
+    // TODO: Cleanup
+    private fun <T : Any, M : Any> getValueFromMappedNullable(preference: Preference.Mapped<T, M>, reader: KeyReader<M?>): T {
         val mappedValue = reader(preference.key, preference.defaultMapped)!!
         return preference.unmap(mappedValue) ?: preference.default
     }

@@ -23,16 +23,21 @@ class MainActivity : ComponentActivity() {
     object Test : PreferenceDefinition() {
         val test = mappedPreference("key", BrowserMode.SelectedBrowser, BrowserMode.Companion)
         val int = intPreference("testint")
+        val init = string("tet") {
+            "yeeeeeeeeet"
+        }
     }
 
     class Test2(context: Context) : StatePreferenceRepository(context) {
         val testState = asState(Test.test)
+        val initState = getOrPutInit(Test.init)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val preferenceRepository = Test2(this)
+        println(preferenceRepository.initState)
 
         val test = preferenceRepository.asState(Test.int)
 //        preferenceRepository.unsafePut()
