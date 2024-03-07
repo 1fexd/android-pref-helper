@@ -1,7 +1,5 @@
 package fe.android.preference.helper.compose
 
-import fe.android.preference.helper.Preference
-
 public class StateCache(
     private val map: MutableMap<String, MutablePreferenceState<*, *, *>> = mutableMapOf()
 ) : AutoCloseable {
@@ -18,12 +16,8 @@ public class StateCache(
         map.clear()
     }
 
-    public fun <T : Any, NT, P : Preference<T, NT>> getOrPut(
-        preference: P,
-        put: (P, NT) -> Unit,
-        get: (P) -> NT
-    ): MutablePreferenceState<*, *, *> {
-        return map.getOrPut(preference.key) { MutablePreferenceState(preference, put, get) }
+    internal fun put(key: String, state: MutablePreferenceState<*, *, *>) {
+        map[key] = state
     }
 
     public fun get(key: String): MutablePreferenceState<*, *, *>? {
@@ -33,4 +27,6 @@ public class StateCache(
     public fun getAll(): MutableMap<String, MutablePreferenceState<*, *, *>> {
         return map
     }
+
+
 }

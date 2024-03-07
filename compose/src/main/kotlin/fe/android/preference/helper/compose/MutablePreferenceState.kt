@@ -1,16 +1,31 @@
 package fe.android.preference.helper.compose
 
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import fe.android.preference.helper.Preference
 import kotlin.reflect.KProperty
 
-public class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
+public class MutableIntPreferenceState(
+    preference: Preference.Default<Int>,
+    put: (Preference.Default<Int>, Int) -> Unit,
+    get: (Preference.Default<Int>) -> Int,
+) : MutablePreferenceState<Int, Int, Preference.Default<Int>>(preference, put, get, mutableIntStateOf(get(preference)))
+
+public class MutableLongPreferenceState(
+    preference: Preference.Default<Long>,
+    put: (Preference.Default<Long>, Long) -> Unit,
+    get: (Preference.Default<Long>) -> Long,
+) : MutablePreferenceState<Long, Long, Preference.Default<Long>>(preference, put, get, mutableLongStateOf(get(preference)))
+
+public open class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     private val preference: P,
     private val put: (P, NT) -> Unit,
-    public val get: (P) -> NT,
+    private val get: (P) -> NT,
+    private val mutableState: MutableState<NT> = mutableStateOf(get(preference))
 ) {
-    private val mutableState = mutableStateOf(get(preference))
     public val value: NT
         get() = this()
 

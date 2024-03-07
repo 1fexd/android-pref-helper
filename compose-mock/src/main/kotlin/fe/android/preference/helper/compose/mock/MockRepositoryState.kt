@@ -4,7 +4,7 @@ import fe.android.preference.helper.*
 import fe.android.preference.helper.compose.*
 
 public object MockRepositoryState  {
-    public inline fun <reified T : Any> preference(
+    public inline fun <reified T : Any> default(
         value: T,
         key: String = "mock_preference"
     ): MutablePreferenceState<T, T, Preference.Default<T>> {
@@ -12,7 +12,7 @@ public object MockRepositoryState  {
         return MutablePreferenceState(pref, { _, _ -> }, { it.default })
     }
 
-    public inline fun <reified T : Any> nullablePreference(
+    public inline fun <reified T : Any> nullable(
         value: T?,
         key: String = "mock_nullable_preference"
     ): MutablePreferenceState<T, T?, Preference.Nullable<T>> {
@@ -20,7 +20,7 @@ public object MockRepositoryState  {
         return MutablePreferenceState(pref, { _, _ -> }, { it.default })
     }
 
-    public inline fun <reified T : Any, reified M : Any> mappedPreference(
+    public inline fun <reified T : Any, reified M : Any> mapped(
         default: T,
         mapper: TypeMapper<T, M>,
         key: String = "mock_mapped_preference"

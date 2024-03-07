@@ -24,8 +24,10 @@ public abstract class StatePreferenceRepository(
     }
 
     @JvmName("asIntState")
-    public fun asState(preference: Preference.Default<Int>): StatePreference<Int> {
-        return createCachedState(preference, ::put, ::getInt)
+    public fun asState(preference: Preference.Default<Int>): MutableIntPreferenceState {
+        return createCachedState(preference, ::put, ::get) { pref, put, get ->
+            MutableIntPreferenceState(pref, put, get)
+        }
     }
 
     @JvmName("asMappedIntState")
@@ -34,32 +36,47 @@ public abstract class StatePreferenceRepository(
     }
 
     @JvmName("asLongState")
-    public fun asState(preference: Preference.Default<Long>): StatePreference<Long> {
-        return createCachedState(preference, ::put, this::get)
+    public fun asState(preference: Preference.Default<Long>): MutableLongPreferenceState {
+        return createCachedState(preference, ::put, ::get) { pref, put, get ->
+            MutableLongPreferenceState(pref, put, get)
+        }
     }
 
     @JvmName("asMappedLongState")
     public fun <T : Any> asState(preference: Preference.Mapped<T, Long>): StateMappedPreference<T, Long> {
-        return createCachedState(preference, ::put, this::get)
+        return createCachedState(preference, ::put, ::get)
     }
 
     @JvmName("asBooleanState")
     public fun asState(preference: Preference.Default<Boolean>): StatePreference<Boolean> {
-        return createCachedState(preference, ::put, this::get)
+        return createCachedState(preference, ::put, ::get)
     }
 
     @JvmName("asMappedBooleanState")
     public fun <T : Any> asState(preference: Preference.Mapped<T, Boolean>): StateMappedPreference<T, Boolean> {
-        return createCachedState(preference, ::put, this::get)
+        return createCachedState(preference, ::put, ::get)
     }
 
-    private fun <T : Any, NT, P : Preference<T, NT>> createCachedState(
+    private fun <T : Any, NT, P : Preference<T, NT>, M : MutablePreferenceState<T, NT, P>> createCachedState(
         preference: P,
         put: Put<P, NT>,
         get: Get<P, NT>,
-    ): MutablePreferenceState<T, NT, P> {
+        defaultValue: (P, Put<P, NT>, Get<P, NT>) -> M = { pref, p, g ->
+            @Suppress("UNCHECKED_CAST")
+            MutablePreferenceState(pref, p, g) as M
+        }
+    ): M {
+        val value = stateCache.get(preference.key)
+        val state = if (value == null) {
+            val answer = defaultValue(preference, put, get)
+            stateCache.put(preference.key, answer)
+            answer
+        } else {
+            value
+        }
+
         @Suppress("UNCHECKED_CAST")
-        return stateCache.getOrPut(preference, put, get) as MutablePreferenceState<T, NT, P>
+        return state as M
     }
 }
 

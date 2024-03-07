@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
     }
 
     class Test2(context: Context) : StatePreferenceRepository(context) {
-
+        val testState = asState(Test.test)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +35,12 @@ class MainActivity : ComponentActivity() {
         val preferenceRepository = Test2(this)
 
         val test = preferenceRepository.asState(Test.int)
+//        preferenceRepository.unsafePut()
         println(test.value)
         println(test())
+
+//        Test.i
+//        Test.intPreference("")
 
 //        test.updateState(2)
         test(2)

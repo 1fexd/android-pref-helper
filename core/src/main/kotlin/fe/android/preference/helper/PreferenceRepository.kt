@@ -30,16 +30,28 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         }
     }
 
-    @OptIn(UnsafePreferenceInteraction::class)
     public fun getAnyAsString(preference: Preference<*, *>): String? {
-        return when (preference.type) {
-            String::class -> unsafeGetString(preference.key, preference.def as String?)
-            Boolean::class -> unsafeGetBoolean(preference.key, preference.def as Boolean?).toString()
-            Int::class -> unsafeGetInt(preference.key, preference.def as Int?).toString()
-            Long::class -> unsafeGetLong(preference.key, preference.def as Long?).toString()
-            else -> null
+        if (preference is Preference.Mapped<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            return when (preference.type) {
+                String::class -> get(preference as Preference.Mapped<*, String>)
+                Boolean::class -> get(preference as Preference.Mapped<*, Boolean>)
+                Int::class -> get(preference as Preference.Mapped<*, Int>)
+                Long::class -> get(preference as Preference.Mapped<*, Long>)
+                else -> null
+            }?.toString()
         }
+
+        @Suppress("UNCHECKED_CAST")
+        return when (preference.type) {
+            String::class -> get(preference as Preference.Nullable<String>)
+            Boolean::class -> get(preference as Preference.Default<Boolean>)
+            Int::class -> get(preference as Preference.Default<Int>)
+            Long::class -> get(preference as Preference.Default<Long>)
+            else -> null
+        }?.toString()
     }
+
 
     @OptIn(UnsafePreferenceInteraction::class)
     public fun get(preference: Preference.Nullable<String>): String? {
@@ -64,7 +76,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     }
 
     @OptIn(UnsafePreferenceInteraction::class)
-    public fun getInt(preference: Preference.Default<Int>): Int {
+    public fun get(preference: Preference.Default<Int>): Int {
         return unsafeGetInt(preference.key, preference.default)
     }
 
