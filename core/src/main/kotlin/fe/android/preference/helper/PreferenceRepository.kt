@@ -21,19 +21,22 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
 
     @OptIn(UnsafePreferenceInteraction::class)
     public fun setStringValueToPreference(preference: Preference<*, *>, value: String) {
-        return when (preference.type) {
+        val mapped = preference as? Preference.Mapped<*, *>
+        val type = mapped?.mappedClazz ?: preference.type
+
+        when (type) {
             String::class -> unsafePut(preference.key, value)
             Boolean::class -> unsafePut(preference.key, value.toBooleanStrict())
             Int::class -> unsafePut(preference.key, value.toInt())
             Long::class -> unsafePut(preference.key, value.toLong())
-            else -> Unit
         }
     }
 
+    @OptIn(UnsafePreferenceInteraction::class)
     public fun getAnyAsString(preference: Preference<*, *>): String? {
         if (preference is Preference.Mapped<*, *>) {
             @Suppress("UNCHECKED_CAST")
-            return when (preference.type) {
+            return when (preference.mappedClazz) {
                 String::class -> get(preference as Preference.Mapped<*, String>)
                 Boolean::class -> get(preference as Preference.Mapped<*, Boolean>)
                 Int::class -> get(preference as Preference.Mapped<*, Int>)
@@ -43,15 +46,14 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         }
 
         if (preference is Preference.Init) {
-            return get(preference)
+            return unsafeGetString(preference.key, preference.default)
         }
 
-        @Suppress("UNCHECKED_CAST")
         return when (preference.type) {
-            String::class -> get(preference as Preference.Nullable<String>)
-            Boolean::class -> get(preference as Preference.Default<Boolean>)
-            Int::class -> get(preference as Preference.Default<Int>)
-            Long::class -> get(preference as Preference.Default<Long>)
+            String::class -> unsafeGetString(preference.key, preference.default as String?)
+            Boolean::class -> unsafeGetBoolean(preference.key, preference.default as Boolean)
+            Int::class -> unsafeGetInt(preference.key, preference.default as Int)
+            Long::class -> unsafeGetLong(preference.key, preference.default as Long)
             else -> null
         }?.toString()
     }
@@ -149,9 +151,9 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
      */
     private inline fun <T : Any, M : Any> getValueFromMapped(
         preference: Preference.Mapped<T, M>,
-        reader: KeyReader<M>
+        get: KeyReader<M>
     ): T {
-        val mappedValue = reader(preference.key, preference.defaultMapped)!!
+        val mappedValue = get(preference.key, preference.defaultMapped)!!
         return preference.unmap(mappedValue) ?: preference.default
     }
 }

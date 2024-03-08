@@ -19,6 +19,10 @@ class MainActivity : ComponentActivity() {
         companion object Companion : OptionTypeMapper<BrowserMode, String>(
             { it.value }, { arrayOf(None, AlwaysAsk, SelectedBrowser, Whitelisted) }
         )
+
+        override fun toString(): String {
+            return value
+        }
     }
 
     object Test : PreferenceDefinition() {
@@ -52,18 +56,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val preferenceRepository = Test2(this)
-        println(preferenceRepository.initState)
+//        println(preferenceRepository.initState)
 
-        val test = preferenceRepository.asState(Test.int)
+//        val test = preferenceRepository.asState(Test.int)
 //        preferenceRepository.unsafePut()
-        println(test.value)
-        println(test())
+//        println(test.value)
+//        println(test())
 
 //        Test.i
 //        Test.intPreference("")
 
 //        test.updateState(2)
-        test(2)
+//        test(2)
 
 //        preferenceRepository.edit {
 //
@@ -74,17 +78,17 @@ class MainActivity : ComponentActivity() {
 ////            pref.writeInt(Test.int, 1, this)
 //        }
 
-        preferenceRepository.getAnyAsString(Test.int)
-
-        preferenceRepository.edit {
-            put(Test.int, 10)
-        }
-
-        val hi = test() == 3
-        println(hi)
+        println(preferenceRepository.getAnyAsString(Test.test))
+//        )
+//        preferenceRepository.edit {
+//            put(Test.int, 10)
+//        }
+//
+//        val hi = test() == 3
+//        println(hi)
 //        val x by test
 
-        val pref = Test.int
+//        val pref = Test.int
 
 
 //        val test123 = preferenceRepository.get(Test.int)
