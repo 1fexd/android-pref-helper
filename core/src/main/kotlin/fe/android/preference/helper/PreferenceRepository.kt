@@ -57,6 +57,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     }
 
 
+    @JvmName("getString")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun get(preference: Preference<String, String?>): String? {
         return unsafeGetString(preference.key, preference.default)
@@ -79,6 +80,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         return getValueFromMapped(preference, ::unsafeGetString)
     }
 
+    @JvmName("getInt")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun get(preference: Preference.Default<Int>): Int {
         return unsafeGetInt(preference.key, preference.default)
@@ -90,6 +92,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         return getValueFromMapped(preference, ::unsafeGetInt)
     }
 
+    @JvmName("getLong")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun get(preference: Preference.Default<Long>): Long {
         return unsafeGetLong(preference.key, preference.default)
@@ -101,6 +104,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         return getValueFromMapped(preference, ::unsafeGetLong)
     }
 
+    @JvmName("getBoolean")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun get(preference: Preference.Default<Boolean>): Boolean {
         return unsafeGetBoolean(preference.key, preference.default)
