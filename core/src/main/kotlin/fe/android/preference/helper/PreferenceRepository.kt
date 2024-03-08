@@ -42,6 +42,10 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
             }?.toString()
         }
 
+        if (preference is Preference.Init) {
+            return get(preference)
+        }
+
         @Suppress("UNCHECKED_CAST")
         return when (preference.type) {
             String::class -> get(preference as Preference.Nullable<String>)
@@ -54,12 +58,12 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
 
 
     @OptIn(UnsafePreferenceInteraction::class)
-    public fun get(preference: Preference.Nullable<String>): String? {
+    public fun get(preference: Preference<String, String?>): String? {
         return unsafeGetString(preference.key, preference.default)
     }
 
     @OptIn(UnsafePreferenceInteraction::class)
-    public fun getOrPutInit(preference: Preference.Init<String>): String {
+    public fun getOrPutInit(preference: Preference.Init): String {
         val value = unsafeGetString(preference.key, null)
         return if (value == null) {
             val initial = preference.initial()
@@ -72,7 +76,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     @JvmName("getMappedByString")
     @OptIn(UnsafePreferenceInteraction::class)
     public fun <T : Any> get(preference: Preference.Mapped<T, String>): T {
-        return getValueFromMappedNullable(preference, ::unsafeGetString)
+        return getValueFromMapped(preference, ::unsafeGetString)
     }
 
     @OptIn(UnsafePreferenceInteraction::class)
@@ -139,16 +143,13 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     /**
      * Utils
      */
-    private fun <T : Any, M : Any> getValueFromMapped(preference: Preference.Mapped<T, M>, reader: KeyReader<M>): T {
-        val mappedValue = reader(preference.key, preference.defaultMapped)
-        return preference.unmap(mappedValue) ?: preference.default
-    }
-
-    // TODO: Cleanup
-    private fun <T : Any, M : Any> getValueFromMappedNullable(preference: Preference.Mapped<T, M>, reader: KeyReader<M?>): T {
+    private inline fun <T : Any, M : Any> getValueFromMapped(
+        preference: Preference.Mapped<T, M>,
+        reader: KeyReader<M>
+    ): T {
         val mappedValue = reader(preference.key, preference.defaultMapped)!!
         return preference.unmap(mappedValue) ?: preference.default
     }
 }
 
-public typealias KeyReader<T> = (String, T) -> T
+public typealias KeyReader<T> = (String, T) -> T?

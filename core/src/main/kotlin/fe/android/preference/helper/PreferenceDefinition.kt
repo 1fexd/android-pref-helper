@@ -1,8 +1,13 @@
 package fe.android.preference.helper
 
+import kotlin.reflect.KClass
+
 internal class PreferenceDefinitionException(msg: String) : Exception(msg)
 
-public abstract class PreferenceDefinition(vararg blacklistedKeys: String) {
+public abstract class PreferenceDefinition(
+    vararg blacklistedKeys: String
+) : AbstractPreferenceDefinition() {
+
     private val blacklistedKeys = mutableSetOf(*blacklistedKeys)
     private val registeredPreferences = mutableMapOf<String, Preference<*, *>>()
 
@@ -21,7 +26,7 @@ public abstract class PreferenceDefinition(vararg blacklistedKeys: String) {
         }
     }
 
-    protected fun <T : Preference<*, *>> add(preference: T): T {
+    protected override fun <T : Preference<*, *>> add(preference: T): T {
         if (finalized) {
             definitionError("Cannot register preference '${preference.key}' as definition has already been finalized!")
         }
@@ -30,7 +35,7 @@ public abstract class PreferenceDefinition(vararg blacklistedKeys: String) {
             definitionError("The key '${preference.key}' is blacklisted and must not be used!")
         }
 
-        if (registeredPreferences.containsKey(preference.key)) {
+        if(preference.key in registeredPreferences){
             definitionError("The key '${preference.key}' is already in use for a preference!")
         }
 
@@ -38,67 +43,22 @@ public abstract class PreferenceDefinition(vararg blacklistedKeys: String) {
         return preference
     }
 
-    protected fun boolean(key: String, default: Boolean = false): Preference.Boolean {
-        return add(Preference.Boolean(key, default))
-    }
-
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("boolean(key, default)"))
-    protected fun booleanPreference(key: String, default: Boolean = false): Preference.Boolean {
-        return boolean(key, default)
-    }
-
-    protected fun string(key: String, default: String? = null): Preference.Nullable<String> {
-        return add(Preference.Nullable(key, default, String::class))
-    }
-
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("string(key, default)"))
-    protected fun stringPreference(key: String, default: String? = null): Preference.Nullable<String> {
-        return string(key, default)
-    }
-
-    protected fun int(key: String, default: Int = 0): Preference.Int {
-        return add(Preference.Int(key, default))
-    }
-
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("int(key, default)"))
-    protected fun intPreference(key: String, default: Int = 0): Preference.Int {
-        return int(key, default)
-    }
-
-    protected fun long(key: String, default: Long = 0L): Preference.Long {
-        return add(Preference.Long(key, default))
-    }
-
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("long(key, default)"))
-    protected fun longPreference(key: String, default: Long = 0L): Preference.Long {
-        return long(key, default)
-    }
-
-    protected inline fun <reified T : Any, reified M : Any> mapped(
+    public inline fun <reified T : Any, reified M : Any> mapped(
         key: String,
         default: T,
-        mapper: TypeMapper<T, M>
+        mapper: TypeMapper<T, M>,
     ): Preference.Mapped<T, M> {
-        return add(Preference.Mapped(key, default, mapper, T::class, M::class))
+        return `access$mapped`(key, default, mapper, T::class, M::class)
     }
 
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("mapped(key, default)"))
-    protected inline fun <reified T : Any, reified M : Any> mappedPreference(
+    @PublishedApi
+    internal fun <T : Any, M : Any> `access$mapped`(
         key: String,
         default: T,
-        mapper: TypeMapper<T, M>
-    ): Preference.Mapped<T, M> {
-        return mapped(key, default, mapper)
-    }
-
-    protected fun string(key: String, initial: () -> String): Preference.Init<String> {
-        return add(Preference.Init(key, initial, String::class))
-    }
-
-    @Deprecated(message = "Use simple API", replaceWith = ReplaceWith("string(key, initial)"))
-    protected fun stringPreference(key: String, initial: () -> String): Preference.Init<String> {
-        return string(key, initial)
-    }
+        mapper: TypeMapper<T, M>,
+        t: KClass<T>,
+        m: KClass<M>
+    ): Preference.Mapped<T, M> = mapped(key, default, mapper, t, m)
 
     private fun definitionError(msg: String): Nothing = throw PreferenceDefinitionException(msg)
 

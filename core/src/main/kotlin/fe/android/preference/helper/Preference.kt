@@ -11,36 +11,35 @@ public sealed class Preference<T : Any, NT> protected constructor(
     internal open val def: Any? = default
     internal open val type: KClass<*> = clazz
 
-    // TODO: Should these be internal (how can they then be accessed from compose-mock?)
-    public class Nullable<T : Any> constructor(
+    public class Nullable<T : Any> internal constructor(
         key: String,
         default: T?,
         clazz: KClass<T>
     ) : Preference<T, T?>(key, default, clazz)
 
-    public open class Default<T : Any> constructor(
+    public open class Default<T : Any> internal constructor(
         key: String,
         default: T,
         clazz: KClass<T>
     ) : Preference<T, T>(key, default, clazz)
 
-    public class Boolean constructor(
+    public class Boolean internal constructor(
         key: String,
         default: kotlin.Boolean
     ) : Default<kotlin.Boolean>(key, default, kotlin.Boolean::class)
 
-    public class Int constructor(
+    public class Int internal constructor(
         key: String,
         default: kotlin.Int
     ) : Default<kotlin.Int>(key, default, kotlin.Int::class)
 
-    public class Long constructor(
+    public class Long internal constructor(
         key: String,
         default: kotlin.Long
     ) : Default<kotlin.Long>(key, default, kotlin.Long::class)
 
-//    @PublishedApi internal
-    public class Mapped<T : Any, M : Any>  constructor(
+
+    public class Mapped<T : Any, M : Any> internal constructor(
         key: String, default: T, private val mapper: TypeMapper<T, M>,
         clazz: KClass<T>, public val mappedClazz: KClass<M>,
     ) : Preference<T, T>(key, default, clazz) {
@@ -54,9 +53,13 @@ public sealed class Preference<T : Any, NT> protected constructor(
         public fun map(value: T): M = mapper.map(value)
     }
 
-    public class Init<T : Any> constructor(
-        key: String, public val initial: () -> T, clazz: KClass<T>
-    ) : Preference<T, T?>(key, null, clazz)
+    public class Init internal constructor(
+        key: String, public val initial: () -> String
+    ) : Preference<String, String?>(key, null, String::class)
+
+//    public class Init<T : Any> internal constructor(
+//        key: String, public val initial: () -> T, clazz: KClass<T>
+//    ) : Preference<T, T?>(key, null, clazz)
 
     override fun equals(other: Any?): kotlin.Boolean {
         return (other != null && other::class == this::class) && (other as? Preference<*, *>)?.key == key

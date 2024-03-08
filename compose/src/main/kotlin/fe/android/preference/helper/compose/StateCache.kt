@@ -27,6 +27,4 @@ public class StateCache(
     public fun getAll(): MutableMap<String, MutablePreferenceState<*, *, *>> {
         return map
     }
-
-
 }
