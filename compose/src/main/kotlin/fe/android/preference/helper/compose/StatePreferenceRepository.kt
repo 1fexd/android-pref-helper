@@ -9,9 +9,9 @@ public typealias StateMappedPreference<T, M> = MutablePreferenceState<T, T, Pref
 public typealias StatePreference<T> = MutablePreferenceState<T, T, Preference.Default<T>>
 
 public abstract class StatePreferenceRepository(
-    context: Context,
+    context: Context, fileName: String = "preferences",
     @Suppress("MemberVisibilityCanBePrivate") public val stateCache: StateCache = StateCache()
-) : PreferenceRepository(context) {
+) : PreferenceRepository(context, fileName) {
 
     @JvmName("asStringState")
     public fun asState(preference: Preference.Nullable<String>): StateNullablePreference<String?, String> {
