@@ -27,7 +27,9 @@ public abstract class PreferenceDefinition(
         }
 
     override fun migrate(repository: PreferenceRepository) {
-        migrate.forEach { (_, migrateFn) -> migrateFn(repository) }
+        for ((key, migrateFn) in migrate) {
+            if (repository.hasStoredValue(key)) migrateFn(repository)
+        }
     }
 
     public fun getAsKeyValuePairList(repository: PreferenceRepository): List<String> {

@@ -20,7 +20,11 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     }
 
     public fun hasStoredValue(preference: Preference<*, *>): Boolean {
-        return preference.key in preferences
+        return hasStoredValue(preference.key)
+    }
+
+    public fun hasStoredValue(key: String): Boolean {
+        return key in preferences
     }
 
     @OptIn(UnsafePreferenceInteraction::class)
