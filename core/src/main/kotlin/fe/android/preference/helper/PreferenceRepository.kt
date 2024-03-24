@@ -19,6 +19,10 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
         preferences.edit().apply(action).apply()
     }
 
+    public fun hasStoredValue(preference: Preference<*, *>): Boolean {
+        return preference.key in preferences
+    }
+
     @OptIn(UnsafePreferenceInteraction::class)
     public fun setStringValueToPreference(preference: Preference<*, *>, value: String) {
         val mapped = preference as? Preference.Mapped<*, *>
@@ -141,7 +145,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
     private inline fun <T : Any?> tryUnsafeGet(
         preferences: SharedPreferences,
         default: T,
-        get: (SharedPreferences, T) -> T?
+        get: (SharedPreferences, T) -> T?,
     ): T? {
         return runCatching { get(preferences, default) }.getOrDefault(default)
     }
@@ -151,7 +155,7 @@ public abstract class PreferenceRepository(context: Context, fileName: String = 
      */
     private inline fun <T : Any, M : Any> getValueFromMapped(
         preference: Preference.Mapped<T, M>,
-        get: KeyReader<M>
+        get: KeyReader<M>,
     ): T {
         val mappedValue = get(preference.key, preference.defaultMapped)!!
         return preference.unmap(mappedValue) ?: preference.default

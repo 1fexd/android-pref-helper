@@ -13,6 +13,7 @@ android {
         applicationId = "fe.linksheet.testapp"
         minSdk = 24
         compileSdk = Version.COMPILE_SDK
+        targetSdk = Version.COMPILE_SDK
         versionCode = (System.currentTimeMillis() / 1000).toInt()
         versionName = "1.0"
 

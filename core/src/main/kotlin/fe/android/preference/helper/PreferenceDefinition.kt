@@ -5,11 +5,12 @@ import kotlin.reflect.KClass
 internal class PreferenceDefinitionException(msg: String) : Exception(msg)
 
 public abstract class PreferenceDefinition(
-    vararg blacklistedKeys: String
+    vararg blacklistedKeys: String,
 ) : AbstractPreferenceDefinition() {
 
     private val blacklistedKeys = mutableSetOf(*blacklistedKeys)
     private val registeredPreferences = mutableMapOf<String, Preference<*, *>>()
+    private val migratePreferences = mutableMapOf<String, (PreferenceRepository) -> Unit>()
 
     private var finalized = false
 
@@ -19,6 +20,15 @@ public abstract class PreferenceDefinition(
             if (!finalized) definitionError("Preferences must not be read until definition has been finalized!")
             return registeredPreferences
         }
+
+    private val migrate: MutableMap<String, (PreferenceRepository) -> Unit>
+        get() {
+            return migratePreferences
+        }
+
+    override fun migrate(repository: PreferenceRepository) {
+        migrate.forEach { (_, migrateFn) -> migrateFn(repository) }
+    }
 
     public fun getAsKeyValuePairList(repository: PreferenceRepository): List<String> {
         return all.map { (key, value) ->
@@ -35,13 +45,27 @@ public abstract class PreferenceDefinition(
             definitionError("The key '${preference.key}' is blacklisted and must not be used!")
         }
 
-        if(preference.key in registeredPreferences){
+        if (preference.key in registeredPreferences) {
             definitionError("The key '${preference.key}' is already in use for a preference!")
         }
 
         registeredPreferences[preference.key] = preference
         return preference
     }
+
+    override fun <T : Preference<*, *>> addMigration(preference: T, run: (PreferenceRepository) -> Unit): T {
+        if (finalized) {
+            definitionError("Cannot migrate '${preference.key}' as definition has already been finalized!")
+        }
+
+        if (preference.key in migratePreferences) {
+            definitionError("Preference '${preference.key}' already has a migration strategy!")
+        }
+
+        migratePreferences[preference.key] = run
+        return preference
+    }
+
 
     public inline fun <reified T : Any, reified M : Any> mapped(
         key: String,
@@ -57,7 +81,7 @@ public abstract class PreferenceDefinition(
         default: T,
         mapper: TypeMapper<T, M>,
         t: KClass<T>,
-        m: KClass<M>
+        m: KClass<M>,
     ): Preference.Mapped<T, M> = mapped(key, default, mapper, t, m)
 
     private fun definitionError(msg: String): Nothing = throw PreferenceDefinitionException(msg)

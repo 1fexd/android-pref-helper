@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import fe.android.preference.helper.OptionTypeMapper
-import fe.android.preference.helper.Preference
 import fe.android.preference.helper.PreferenceDefinition
 import fe.android.preference.helper.compose.StatePreferenceRepository
 
@@ -25,9 +24,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    object Test : PreferenceDefinition() {
+    object TestPreferenceDefinition : PreferenceDefinition() {
         val test = mapped("key", BrowserMode.SelectedBrowser, BrowserMode.Companion)
-        val int = int("testint")
+        val int = int("testint").migrate { repo, value ->
+            if (!repo.hasStoredValue(test)) {
+
+            }
+        }
+
+
         val init = string("tet") {
             "yeeeeeeeeet"
         }
@@ -48,8 +53,22 @@ class MainActivity : ComponentActivity() {
     }
 
     class Test2(context: Context) : StatePreferenceRepository(context) {
-        val testState = asState(Test.test)
-        val initState = getOrPutInit(Test.init)
+        val testState = asState(TestPreferenceDefinition.test)
+        val initState = getOrPutInit(TestPreferenceDefinition.init)
+
+        init {
+
+//            TestPreferenceDefinition.migrate(this)
+
+//            TestPreferenceDefinition.migrate.forEach { (key, pref) ->
+//
+////                isPreferenceStored(key)
+//            }
+        }
+
+        fun test() {
+//            isPreferenceStored(Test.test)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +77,10 @@ class MainActivity : ComponentActivity() {
         val preferenceRepository = Test2(this)
 //        println(preferenceRepository.initState)
 
-//        val test = preferenceRepository.asState(Test.int)
+        val test = preferenceRepository.asState(TestPreferenceDefinition.int)
 //        preferenceRepository.unsafePut()
 //        println(test.value)
-//        println(test())
+        println(test())
 
 //        Test.i
 //        Test.intPreference("")
@@ -78,7 +97,7 @@ class MainActivity : ComponentActivity() {
 ////            pref.writeInt(Test.int, 1, this)
 //        }
 
-        println(preferenceRepository.getAnyAsString(Test.test))
+        println(preferenceRepository.getAnyAsString(TestPreferenceDefinition.test))
 //        )
 //        preferenceRepository.edit {
 //            put(Test.int, 10)
