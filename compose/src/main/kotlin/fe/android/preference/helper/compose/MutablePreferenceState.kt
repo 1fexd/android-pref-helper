@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import fe.android.preference.helper.Preference
-import kotlin.reflect.KProperty
 
 public class MutableIntPreferenceState(
     preference: Preference.Default<Int>,
@@ -25,12 +24,14 @@ public open class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     private val put: (P, NT) -> Unit,
     private val get: (P) -> NT,
     private val mutableState: MutableState<NT> = mutableStateOf(get(preference))
-) {
-    public val value: NT
-        get() = this()
+) : MutableState<NT> by mutableState {
+
+    override var value: NT
+        get() = mutableState.value
+        set(value) = update(value)
 
     public operator fun invoke(): NT {
-        return mutableState.value
+        return value
     }
 
     public operator fun invoke(newState: NT) {
@@ -49,6 +50,4 @@ public open class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     public fun forceRefresh() {
         update(get(preference), write = false)
     }
-
-    public operator fun getValue(thisObj: Any?, property: KProperty<*>): NT = this()
 }

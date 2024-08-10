@@ -3,6 +3,15 @@ package fe.android.preference.helper.testapp
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import fe.android.preference.helper.OptionTypeMapper
 import fe.android.preference.helper.PreferenceDefinition
 import fe.android.preference.helper.compose.StatePreferenceRepository
@@ -32,56 +41,67 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val test123 = long(".________________________.", 1111).migrateTo { preferenceRepository, current ->
+            current + 1000
+        }
 
         val init = string("tet") {
             "yeeeeeeeeet"
         }
 
+        val counter = int("counter")
+
         init {
             finalize()
         }
-
-        init {
-//            this.add()
-        }
-
-        init {
-//            Preference.Init<Int>("test", { 0 }, Int::class)
-        }
-
-//        val test = this.
     }
 
     class Test2(context: Context) : StatePreferenceRepository(context) {
-        val testState = asState(TestPreferenceDefinition.test)
+//        val testState = asState(TestPreferenceDefinition.test)
         val initState = getOrPutInit(TestPreferenceDefinition.init)
-
-        init {
-
-//            TestPreferenceDefinition.migrate(this)
-
-//            TestPreferenceDefinition.migrate.forEach { (key, pref) ->
-//
-////                isPreferenceStored(key)
-//            }
-        }
-
-        fun test() {
-//            isPreferenceStored(Test.test)
-        }
+        val test123 = asState(TestPreferenceDefinition.test123)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val preferenceRepository = Test2(this)
-//        println(preferenceRepository.initState)
 
-        val test = preferenceRepository.asState(TestPreferenceDefinition.int)
+        setContent {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 10.dp)
+            ) {
+                var counter by remember { preferenceRepository.asState(TestPreferenceDefinition.counter) }
+
+                Column {
+                    Text(text = "$counter")
+
+                    Row {
+                        Button(onClick = {
+                            counter--
+                        }) {
+                            Text(text = "-")
+                        }
+
+                        Button(onClick = {
+                            counter++
+                        }) {
+                            Text(text = "+")
+                        }
+                    }
+                }
+            }
+        }
+//        TestPreferenceDefinition.runMigrations(preferenceRepository)
+//        println(preferenceRepository.initState)s
+
+//        val test = preferenceRepository.asState(TestPreferenceDefinition.int)
+//        val test123 = preferenceRepository.asState(TestPreferenceDefinition.test123)
 //        preferenceRepository.unsafePut()
 //        println(test.value)
-        println(test())
-
+//        println(test())
+//        Log.d("MigrateTo(test123)", "current=${test123()}")
 //        Test.i
 //        Test.intPreference("")
 
@@ -97,7 +117,7 @@ class MainActivity : ComponentActivity() {
 ////            pref.writeInt(Test.int, 1, this)
 //        }
 
-        println(preferenceRepository.getAnyAsString(TestPreferenceDefinition.test))
+//        println(preferenceRepository.getAnyAsString(TestPreferenceDefinition.test))
 //        )
 //        preferenceRepository.edit {
 //            put(Test.int, 10)
