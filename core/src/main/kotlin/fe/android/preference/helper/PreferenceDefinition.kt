@@ -26,7 +26,7 @@ public abstract class PreferenceDefinition(
             return migratePreferences
         }
 
-    override fun migrate(repository: PreferenceRepository) {
+    override fun runMigrations(repository: PreferenceRepository) {
         for ((key, migrateFn) in migrate) {
             if (repository.hasStoredValue(key)) migrateFn(repository)
         }
@@ -67,7 +67,6 @@ public abstract class PreferenceDefinition(
         migratePreferences[preference.key] = run
         return preference
     }
-
 
     public inline fun <reified T : Any, reified M : Any> mapped(
         key: String,
