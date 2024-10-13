@@ -1,8 +1,10 @@
-import de.fayard.refreshVersions.core.versionFor
+import fe.buildsrc.Version
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("net.nemerosa.versioning")
 }
 
 android {
@@ -39,9 +41,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
     }
 
     packaging {

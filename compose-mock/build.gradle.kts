@@ -1,10 +1,15 @@
 import de.fayard.refreshVersions.core.versionFor
+import fe.buildsrc.Version
+import fe.buildsrc.publishing.PublicationComponent
+import fe.buildsrc.publishing.asProvider
+import fe.buildsrc.publishing.publish
 
 plugins {
-    id(libs.plugins.com.android.library)
-    id(libs.plugins.org.jetbrains.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("net.nemerosa.versioning")
     `maven-publish`
-    id(libs.plugins.net.nemerosa.versioning)
 }
 
 val group = "fe.android.preference.helper.compose.mock"
@@ -39,11 +44,10 @@ android {
 }
 
 dependencies {
-    // doesn't work for some bizarre reason?
-//    api(AndroidX.compose.runtime)
-    api("androidx.compose.runtime:runtime:1.5.4")
+    implementation(platform(AndroidX.compose.bom))
+    implementation(AndroidX.compose.runtime)
     api(project(":core"))
     api(project(":compose"))
 }
 
-publishing.publish(project, group, versioning.info.tag ?: versioning.info.full, PublicationComponent.RELEASE)
+publishing.publish(project, group, versioning.asProvider(project), PublicationComponent.RELEASE)
