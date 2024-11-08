@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.nemerosa.versioning:net.nemerosa.versioning.gradle.plugin:3.1.0")
+    implementation("net.nemerosa.versioning:net.nemerosa.versioning.gradle.plugin:_")
 }
 
 kotlin {

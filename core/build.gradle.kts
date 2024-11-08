@@ -10,14 +10,18 @@ plugins {
     `maven-publish`
 }
 
-val group = "fe.android.preference.helper"
+group = "fe.android.preference.helper"
 
 android {
-    namespace = group
+    namespace = group.toString()
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     kotlin {
@@ -38,4 +42,9 @@ android {
     }
 }
 
-publishing.publish(project, group, versioning.asProvider(project), PublicationComponent.RELEASE)
+publishing.publish(
+    project,
+    group.toString(),
+    versioning.asProvider(project),
+    PublicationComponent.RELEASE
+)

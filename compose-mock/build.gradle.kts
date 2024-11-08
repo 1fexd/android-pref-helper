@@ -1,4 +1,3 @@
-import de.fayard.refreshVersions.core.versionFor
 import fe.buildsrc.Version
 import fe.buildsrc.publishing.PublicationComponent
 import fe.buildsrc.publishing.asProvider
@@ -12,27 +11,23 @@ plugins {
     `maven-publish`
 }
 
-val group = "fe.android.preference.helper.compose.mock"
+group = "fe.android.preference.helper.compose.mock"
 
 android {
-    namespace = group
+    namespace = group.toString()
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
         minSdk = Version.MIN_SDK
     }
 
-    kotlin {
-        jvmToolchain(Version.JVM)
-        explicitApi()
-    }
-
     buildFeatures {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
+    kotlin {
+        jvmToolchain(Version.JVM)
+        explicitApi()
     }
 
     publishing {
@@ -50,4 +45,9 @@ dependencies {
     api(project(":compose"))
 }
 
-publishing.publish(project, group, versioning.asProvider(project), PublicationComponent.RELEASE)
+publishing.publish(
+    project,
+    group.toString(),
+    versioning.asProvider(project),
+    PublicationComponent.RELEASE
+)
