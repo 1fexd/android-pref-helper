@@ -20,10 +20,6 @@ android {
         minSdk = Version.MIN_SDK
     }
 
-    buildFeatures {
-        compose = true
-    }
-
     kotlin {
         jvmToolchain(Version.JVM)
         explicitApi()

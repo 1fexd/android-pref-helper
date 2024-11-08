@@ -8,7 +8,7 @@ plugins {
     id("net.nemerosa.versioning")
 }
 
-val group = "com.github.1fexd.composekit"
+val group = "com.github.1fexd.android-pref-helper"
 
 dependencies {
     constraints {
