@@ -54,7 +54,11 @@ plugins {
 extra.properties["gradle.build.dir"]
     ?.let { includeBuild(it.toString()) }
 
-include(":core", ":compose", ":compose-mock")
+include(":core")
+
+include(":compose:compose-core")
+include(":compose:compose-mock")
+
 include(":platform")
 
 if (!hasJitpackEnv) {

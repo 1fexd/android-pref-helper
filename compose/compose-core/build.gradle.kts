@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     api(project(":core"))
-    api(project(":compose"))
     implementation(platform(AndroidX.compose.bom))
     implementation(AndroidX.compose.runtime)
 }
