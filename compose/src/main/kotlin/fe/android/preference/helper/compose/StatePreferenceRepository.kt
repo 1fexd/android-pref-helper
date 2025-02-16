@@ -82,3 +82,51 @@ public abstract class StatePreferenceRepository(
 
 public typealias Put<P, NT> = (P, NT) -> Unit
 public typealias Get<P, NT> = (P) -> NT
+
+@JvmName("asBooleanFunction")
+public fun StatePreferenceRepository.asFunction(preference: Preference.Default<Boolean>): () -> Boolean {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asIntFunction")
+public fun StatePreferenceRepository.asFunction(preference: Preference.Default<Int>): () -> Int {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asLongFunction")
+public fun StatePreferenceRepository.asFunction(preference: Preference.Default<Long>): () -> Long {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asStringFunction")
+public fun StatePreferenceRepository.asFunction(preference: Preference.Nullable<String>): () -> String? {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asMappedStringFunction")
+public fun <T : Any> StatePreferenceRepository.asFunction(preference: Preference.Mapped<T, String>): () -> T {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asMappedIntFunction")
+public fun <T : Any> StatePreferenceRepository.asFunction(preference: Preference.Mapped<T, Int>): () -> T {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asMappedLongFunction")
+public fun <T : Any> StatePreferenceRepository.asFunction(preference: Preference.Mapped<T, Long>): () -> T {
+    val state = asState(preference)
+    return state::invoke
+}
+
+@JvmName("asMappedBooleanFunction")
+public fun <T : Any> StatePreferenceRepository.asFunction(preference: Preference.Mapped<T, Boolean>): () -> T {
+    val state = asState(preference)
+    return state::invoke
+}

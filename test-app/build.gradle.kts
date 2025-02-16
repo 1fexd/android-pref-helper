@@ -1,20 +1,20 @@
-import fe.buildsrc.Version
+import fe.buildlogic.Version
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("net.nemerosa.versioning")
 }
 
+group = "fe.android.preference.helper.testapp"
+
 android {
-    namespace = "fe.android.preference.helper.testapp"
+    namespace = group.toString()
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
-        applicationId = "fe.linksheet.testapp"
-        minSdk = 24
-        compileSdk = Version.COMPILE_SDK
+        applicationId = group.toString()
+        minSdk = Version.MIN_SDK
         targetSdk = Version.COMPILE_SDK
         versionCode = (System.currentTimeMillis() / 1000).toInt()
         versionName = "1.0"
@@ -47,6 +47,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":compose"))
+
     implementation(AndroidX.core.ktx)
     implementation(AndroidX.lifecycle.runtime.ktx)
     implementation(AndroidX.activity.compose)
@@ -55,7 +58,4 @@ dependencies {
     implementation(AndroidX.compose.ui.graphics)
     implementation(AndroidX.compose.ui.toolingPreview)
     implementation(AndroidX.compose.material3)
-
-    implementation(project(":core"))
-    implementation(project(":compose"))
 }
