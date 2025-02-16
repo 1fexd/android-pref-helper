@@ -1,17 +1,18 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import fe.buildlogic.Version
 import fe.buildlogic.extension.asProvider
+import fe.buildlogic.fixGroup
 import fe.buildlogic.publishing.PublicationComponent
+import fe.buildlogic.publishing.PublicationName
 import fe.buildlogic.publishing.publish
 import fe.buildlogic.version.AndroidVersionStrategy
 import net.nemerosa.versioning.VersioningExtension
-import okhttp3.internal.platform.android.AndroidLogHandler.publish
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 plugins {
     id("org.jetbrains.kotlin.android") apply false
-    id("com.android.library") version "8.7.0" apply false
     id("org.jetbrains.kotlin.plugin.compose") apply false
+    id("com.android.library") apply false
     id("net.nemerosa.versioning") apply false
     id("com.gitlab.grrfe.build-logic-plugin")
     `maven-publish`
@@ -39,7 +40,7 @@ subprojects {
         asProvider(this@subprojects, provider)
     }
 
-    group = baseGroup
+    group = fixGroup(baseGroup)
     version = versionProvider.get()
 
     if (!isPlatform && !isTestApp) {
@@ -58,7 +59,7 @@ subprojects {
 
             publishing {
                 multipleVariants {
-                    allVariants()
+                    singleVariant(PublicationName.Release)
                     withSourcesJar()
                 }
             }
@@ -74,7 +75,8 @@ subprojects {
             this@subprojects,
             group.toString(),
             versionProvider,
-            if (isPlatform) PublicationComponent.JavaPlatform else PublicationComponent.Android
+            if (isPlatform) PublicationComponent.JavaPlatform else PublicationComponent.Android,
+            PublicationName.Release
         )
     }
 }
