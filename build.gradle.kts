@@ -18,7 +18,7 @@ plugins {
     `maven-publish`
 }
 
-val baseGroup = "com.github.fexd.android.pref.helper"
+val baseGroup = "com.github.q1fexd.android.pref.helper"
 
 subprojects {
     val isPlatform = name == "platform"
