@@ -5,6 +5,7 @@ import fe.buildlogic.publishing.PublicationComponent
 import fe.buildlogic.publishing.publish
 import fe.buildlogic.version.AndroidVersionStrategy
 import net.nemerosa.versioning.VersioningExtension
+import okhttp3.internal.platform.android.AndroidLogHandler.publish
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 plugins {
@@ -16,7 +17,7 @@ plugins {
     `maven-publish`
 }
 
-val baseGroup = "com.github._1fexd.android.pref.helper"
+val baseGroup = "com.github.fexd.android.pref.helper"
 
 subprojects {
     val isPlatform = name == "platform"
