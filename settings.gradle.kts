@@ -22,7 +22,7 @@ pluginManagement {
 
     when(val gradleBuildDir = extra.properties["gradle.build.dir"]) {
         null -> {
-            val gradleBuildVersion = extra.properties["gradleBuildVersion"]
+            val gradleBuildVersion = extra.properties["gradle.build.version"]
             val plugins = mapOf(
                 "com.gitlab.grrfe.build-settings-plugin" to "com.gitlab.grrfe.gradle-build:build-settings",
                 "com.gitlab.grrfe.build-logic-plugin" to "com.gitlab.grrfe.gradle-build:build-logic"
