@@ -2,7 +2,6 @@
 
 import fe.buildsettings.extension.hasJitpackEnv
 
-
 rootProject.name = "android-pref-helper"
 
 pluginManagement {
