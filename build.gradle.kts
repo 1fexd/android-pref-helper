@@ -1,6 +1,8 @@
 import com.android.build.api.dsl.LibraryExtension
+import fe.buildlogic.ProjectInfo
 import fe.buildlogic.Version
 import fe.buildlogic.extension.asProvider
+import fe.buildlogic.extension.getReleaseVersion
 import fe.buildlogic.fixGroup
 import fe.buildlogic.publishing.PublicationComponent
 import fe.buildlogic.publishing.PublicationName
@@ -18,7 +20,7 @@ plugins {
     `maven-publish`
 }
 
-val baseGroup = "com.github.q1fexd.android.pref.helper"
+val projectInfo = ProjectInfo("com.github.1fexd", "fe","android.pref.helper")
 
 subprojects {
     val isPlatform = name == "platform"
@@ -40,8 +42,8 @@ subprojects {
         asProvider(this@subprojects, provider)
     }
 
-    group = fixGroup(baseGroup)
-    version = versionProvider.get()
+    group = this@subprojects.fixGroup("${projectInfo.prefix}.${projectInfo.projectName}")
+    version = versionProvider.getReleaseVersion()
 
     if (!isPlatform && !isTestApp) {
         with(extensions["kotlin"] as KotlinAndroidProjectExtension) {
@@ -50,7 +52,7 @@ subprojects {
         }
 
         with(extensions["android"] as LibraryExtension) {
-            namespace = group.toString()
+            namespace = this@subprojects.fixGroup("fe.${projectInfo.projectName}")
             compileSdk = Version.COMPILE_SDK
 
             defaultConfig {
@@ -73,8 +75,6 @@ subprojects {
     if (!isTestApp) {
         publishing.publish(
             this@subprojects,
-            group.toString(),
-            versionProvider,
             if (isPlatform) PublicationComponent.JavaPlatform else PublicationComponent.Android,
             PublicationName.Release
         )
