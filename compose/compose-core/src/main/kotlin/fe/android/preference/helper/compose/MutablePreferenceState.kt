@@ -24,7 +24,7 @@ public open class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
     private val put: (P, NT) -> Unit,
     private val get: (P) -> NT,
     private val mutableState: MutableState<NT> = mutableStateOf(get(preference))
-) : MutableState<NT> by mutableState {
+) : MutableState<NT> by mutableState, (NT) -> Unit {
 
     override var value: NT
         get() = mutableState.value
@@ -34,7 +34,7 @@ public open class MutablePreferenceState<T : Any, NT, P : Preference<T, NT>>(
         return value
     }
 
-    public operator fun invoke(newState: NT) {
+    public override operator fun invoke(newState: NT) {
         update(newState)
     }
 
