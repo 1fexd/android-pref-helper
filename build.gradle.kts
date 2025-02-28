@@ -20,7 +20,7 @@ plugins {
     `maven-publish`
 }
 
-val projectInfo = ProjectInfo("com.github.1fexd", "fe","android.pref.helper")
+val baseGroup = "com.github.fexd.androidprefhelper"
 
 subprojects {
     val isPlatform = name == "platform"
@@ -42,7 +42,7 @@ subprojects {
         asProvider(this@subprojects, provider)
     }
 
-    group = this@subprojects.fixGroup("${projectInfo.prefix}.${projectInfo.projectName}")
+    group = baseGroup
     version = versionProvider.getReleaseVersion()
 
     if (!isPlatform && !isTestApp) {
@@ -52,7 +52,7 @@ subprojects {
         }
 
         with(extensions["android"] as LibraryExtension) {
-            namespace = this@subprojects.fixGroup("fe.${projectInfo.projectName}")
+            namespace = baseGroup
             compileSdk = Version.COMPILE_SDK
 
             defaultConfig {
