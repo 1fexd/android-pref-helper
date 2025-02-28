@@ -5,4 +5,4 @@ custom types not supported by the SharedPreference API by mapping them to a supp
 reading or writing.
 
 Additionally, helper methods for Jetpack Compose are included which provide the preference
-as `MutableState` (which enables composables to re-render when a the preference's value is updated)
+as `MutableState` (which enables composables to re-render when the preference's value is updated)
